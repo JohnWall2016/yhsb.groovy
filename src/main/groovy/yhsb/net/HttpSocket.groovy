@@ -49,6 +49,8 @@ class HttpSocket implements Closeable {
                         switch (c) {
                             case -1:
                                 it.write(0xd)
+                                stop = true
+                                break
                             case 0xa:
                                 stop = true
                                 break
@@ -73,7 +75,7 @@ class HttpSocket implements Closeable {
             if (!line) break
             def i = line.indexOf(':')
             if (i >= 0) {
-                header[line[0..<i].trim()] = line[i + 1..-1].trim()
+                header.addValue(line[0..<i].trim(), line[i + 1..-1].trim())
             }
         }
         header
@@ -86,7 +88,7 @@ class HttpSocket implements Closeable {
     String readBody(HttpHeader header = null) {
         header = header ?: readHeader()
         new ByteArrayOutputStream(512).withCloseable {
-            if (header["Transfer-Encoding"]?.any { it == 'chunked' }) {
+            if (header.getValues("Transfer-Encoding")?.any { it == 'chunked' }) {
                 while (true) {
                     def len = Integer.parseInt(readLine(), 16)
                     if (len <= 0) {
@@ -98,7 +100,7 @@ class HttpSocket implements Closeable {
                     }
                 }
             } else if (header.containsKey('Content-Length')) {
-                def len = Integer.parseInt(header['Content-Length'][0], 10)
+                def len = Integer.parseInt(header.getValues('Content-Length')[0], 10)
                 if (len > 0) {
                     transfer(it, len)
                 }

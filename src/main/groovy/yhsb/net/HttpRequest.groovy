@@ -19,7 +19,7 @@ class HttpRequest {
     }
 
     HttpRequest addHeader(String key, String value) {
-        header[key] = value
+        header.addValue(key, value)
         this
     }
 

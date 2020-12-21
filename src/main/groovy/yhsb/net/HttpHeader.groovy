@@ -20,11 +20,11 @@ class HttpHeader implements Iterable<Entry<String, String>> {
 		header.containsKey(key.toLowerCase())
 	}
 
-	ArrayList<String> getAt(String key) {
+	ArrayList<String> getValues(String key) {
 		header[key.toLowerCase()]
 	}
 
-	void putAt(String key, String value) {
+	void addValue(String key, String value) {
 		def k = key.toLowerCase()
 		if (!header.containsKey(k)) {
 			header[k] = new ArrayList<String>()
@@ -34,7 +34,7 @@ class HttpHeader implements Iterable<Entry<String, String>> {
 
 	void add(HttpHeader other) {
 		for (e in other) {
-			this.putAt(e.key, e.value)
+			addValue(e.key, e.value)
 		}
 	}
 
