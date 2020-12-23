@@ -1,4 +1,4 @@
-package yhsb.net
+package yhsb.base.net
 
 class HttpSocket implements Closeable {
     final String host

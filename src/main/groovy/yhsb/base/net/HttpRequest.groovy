@@ -1,4 +1,4 @@
-package yhsb.net
+package yhsb.base.net
 
 class HttpRequest {
     final String path

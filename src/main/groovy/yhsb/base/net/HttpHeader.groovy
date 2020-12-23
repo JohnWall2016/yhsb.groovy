@@ -1,4 +1,4 @@
-package yhsb.net
+package yhsb.base.net
 
 import groovy.transform.TypeChecked
 import java.util.Map.Entry
