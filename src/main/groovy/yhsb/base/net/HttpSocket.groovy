@@ -6,7 +6,7 @@ class HttpSocket implements Closeable {
     final String charset
     final String url
     private final Socket socket
-    private final InputStream input
+    protected final InputStream input
     private final OutputStream output
 
     HttpSocket(String host, int port, String charset = 'UTF-8') {
@@ -81,7 +81,7 @@ class HttpSocket implements Closeable {
         header
     }
 
-    private void transfer(OutputStream to, int len) {
+    protected void transfer(OutputStream to, int len) {
         to.write(input.readNBytes(len))
     }
 

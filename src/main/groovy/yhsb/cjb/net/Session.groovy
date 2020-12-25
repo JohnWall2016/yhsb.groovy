@@ -2,6 +2,7 @@ package yhsb.cjb.net
 
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
+import groovy.transform.ToString
 import yhsb.base.net.HttpRequest
 import yhsb.base.net.HttpSocket
 import yhsb.base.util.Config
@@ -180,6 +181,7 @@ class JsonService<T extends Request> implements Jsonable {
     List<T> data
 }
 
+@ToString
 class Result<T extends Jsonable> implements Iterable<T>, Jsonable {
     @SerializedName('rowcount')
     int rowCount = 0

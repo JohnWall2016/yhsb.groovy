@@ -12,15 +12,15 @@ import groovy.transform.PackageScope
 
 import java.lang.reflect.Type
 
-class JsonField {
+abstract class JsonField {
     @PackageScope
-    String value
+    protected String value
 
     String getValue() {
         value
     }
 
-    HashMap<String, String> valueMap = []
+    abstract Map<String, String> getValueMap()
 
     String getName() {
         if (valueMap.containsKey(value)) {
@@ -39,7 +39,6 @@ class JsonField {
 interface JsonAdapter<T> extends JsonSerializer<T>, JsonDeserializer<T> {}
 
 class JsonFieldAdapter implements JsonAdapter<JsonField> {
-
     @Override
     JsonField deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         def classOfT = typeOfT as Class<?>
