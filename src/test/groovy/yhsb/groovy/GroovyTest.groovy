@@ -1,4 +1,7 @@
-package yhsb
+package yhsb.groovy
+
+import groovy.transform.TypeChecked
+
 /*
 def testLabel() {
 	int i = 0
@@ -16,6 +19,7 @@ def testLabel() {
 
 testLabel()
 */
+/*
 trait SayHello {
 	abstract String getName()
 	void sayHello() {
@@ -31,3 +35,25 @@ class Person implements SayHello {
 
 def p = new Person(name: "John")
 p.sayHello()
+ */
+
+
+class Person {
+	//private String name
+	protected String name
+
+	String name() {
+		{ name }.call()
+	}
+
+	Person(String name) {
+		this.name = name
+	}
+}
+
+class Man extends Person {
+	Man(String name) { super(name) }
+}
+
+def m = new Man('Peter')
+println m.name()
