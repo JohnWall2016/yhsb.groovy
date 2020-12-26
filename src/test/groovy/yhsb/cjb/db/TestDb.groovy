@@ -20,23 +20,18 @@ class JbHistoryData implements GormEntity<JbHistoryData> {
     }
 }
 
-class MainCase {
-    static void main(String[] args) {
-        def datastore = new HibernateDatastore([
+class TestDb {
+    static private HibernateDatastore datastore
+
+    static HibernateDatastore getDatastore() {
+        if (datastore) return datastore
+        datastore = new HibernateDatastore([
                 'dataSource.driverClassName': 'com.mysql.cj.jdbc.Driver',
                 'dataSource.url'            : 'jdbc:mysql://localhost:3306/test?characterEncoding=utf8',
                 'dataSource.username'       : 'root',
                 'dataSource.password'       : 'root',
                 'dataSource.logSql'         : 'true',
         ], JbHistoryData)
-
-        datastore.withNewSession {
-            def d = JbHistoryData
-                    .get('130321196403220601')
-            println d
-
-            println d.class.getClassLoader()
-            println JbHistoryData.getClassLoader()
-        }
+        datastore
     }
 }

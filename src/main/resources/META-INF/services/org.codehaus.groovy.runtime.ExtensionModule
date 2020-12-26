@@ -1,3 +1,3 @@
 moduleName=Yhsb extension module
 moduleVersion=0.0.1
-extensionClasses=yhsb.base.util.StringExtensions
+extensionClasses=yhsb.base.util.StringExtensions,yhsb.base.util.ExcelExtensions
