@@ -25,13 +25,13 @@ class SysLogin extends Request {
 }
 
 class CbxxQuery extends Request {
-    CbxxQuery(String idcard) {
+    CbxxQuery(String idCard) {
         super('executeSncbxxConQ')
-        this.idcard = idcard
+        this.idCard = idCard
     }
 
     @SerializedName('aac002')
-    String idcard
+    String idCard
 }
 
 class CbState extends JsonField {
@@ -59,7 +59,7 @@ class JfState extends JsonField {
 
 class JbKind extends JsonField {
     @Override
-    HashMap<String, String> getValueMap() {
+    Map<String, String> getValueMap() {
         jbKindMap
     }
 
@@ -146,7 +146,7 @@ class Xzqh {
             '43030216': '（原）羊牯塘街',
     ])
 
-    static final List<Matcher> regExps = [
+    static final List<String> regExps = [
             /湘潭市雨湖区((.*?乡)(.*?社区)).*/,
             /湘潭市雨湖区((.*?乡)(.*?村)).*/,
             /湘潭市雨湖区((.*?乡)(.*?政府机关)).*/,
@@ -197,7 +197,7 @@ class Cbxx implements Jsonable, JbState, XzqhName {
     int pid
 
     @SerializedName('aac002')
-    String idcard
+    String idCard
 
     @SerializedName('aac003')
     String name
@@ -227,6 +227,7 @@ class Cbxx implements Jsonable, JbState, XzqhName {
     String czName
 
     boolean valid() {
-        if (idcard) return true
+        if (idCard) return true
+        false
     }
 }

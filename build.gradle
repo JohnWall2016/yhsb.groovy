@@ -31,6 +31,14 @@ dependencies {
     implementation 'com.typesafe:config:1.4.0'
     implementation 'com.google.guava:guava:30.1-jre'
 
+    // Use the gorm for hibernate
+    implementation "org.grails:grails-datastore-gorm-hibernate5:7.1.0.M2"
+    runtimeOnly "mysql:mysql-connector-java:8.0.22"
+    runtimeOnly "org.apache.tomcat:tomcat-jdbc:8.5.0"
+    runtimeOnly "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
+    runtimeOnly "org.slf4j:slf4j-api:1.7.10"
+    runtimeOnly "org.slf4j:slf4j-simple:1.7.10"
+
     // Use the awesome Spock testing and specification framework
     testImplementation 'org.spockframework:spock-core:2.0-M4-groovy-3.0'
 }
