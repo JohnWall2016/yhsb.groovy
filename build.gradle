@@ -57,8 +57,8 @@ task(cjb) {
         classpath = sourceSets.main.runtimeClasspath
     }
 
-    task(otherPayment, dependsOn: 'classes', type: JavaExec) {
-        main = 'yhsb.app.cjb.OtherPayment'
+    task(dfPayment, dependsOn: 'classes', type: JavaExec) {
+        main = 'yhsb.app.cjb.DfPayment'
         classpath = sourceSets.main.runtimeClasspath
     }
 }
