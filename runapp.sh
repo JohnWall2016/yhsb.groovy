@@ -1,0 +1,1 @@
+./gradlew -q -I init.gradle $*

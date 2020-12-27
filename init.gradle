@@ -1,0 +1,19 @@
+
+gradle.with {
+    def appArgs = []
+    it.startParameter.taskRequests.each {
+        def argsIter = it.args.iterator()
+        while (argsIter.hasNext()) {
+            def arg = argsIter.next()
+            if (arg == '---') {
+                argsIter.remove()
+                while (argsIter.hasNext()) {
+                    appArgs.add(argsIter.next())
+                    argsIter.remove()
+                }
+            }
+        }
+    }
+    it.ext.appArgs = appArgs
+}
+

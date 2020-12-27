@@ -14,14 +14,16 @@ plugins {
     id 'java-library'
 
     id 'eclipse'
+
+    id 'java'
 }
 
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
     // jcenter()
-    maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-    maven{ url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'}
+    maven{ url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+    maven{ url 'https://maven.aliyun.com/nexus/content/repositories/jcenter'}
 }
 
 dependencies {
@@ -45,4 +47,15 @@ dependencies {
 
     // Use the awesome Spock testing and specification framework
     testImplementation 'org.spockframework:spock-core:2.0-M4-groovy-3.0'
+}
+
+task(cjb) {
+    task(query, dependsOn: 'classes', type: JavaExec) {
+        main = 'yhsb.app.cjb.Query'
+        classpath = sourceSets.main.runtimeClasspath
+        if (project.gradle.hasProperty("appArgs")) {
+            List<String> appArgs = project.gradle.appArgs
+            args appArgs
+        }
+    }
 }
