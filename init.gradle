@@ -2,6 +2,7 @@
 gradle.with {
     def appArgs = []
     it.startParameter.taskRequests.each {
+        // println "task: $it"
         def argsIter = it.args.iterator()
         while (argsIter.hasNext()) {
             def arg = argsIter.next()
