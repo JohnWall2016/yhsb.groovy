@@ -141,6 +141,13 @@ class PageRequest extends Request {
         super(id)
     }
 
+    PageRequest(String id, int page, int pageSize, HashMap<String, String> sorting) {
+        super(id)
+        this.page = page
+        this.pageSize = pageSize
+        this.sorting = [sorting]
+    }
+
     int page = 1
 
     @SerializedName('pagesize')

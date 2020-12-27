@@ -44,6 +44,12 @@ class CbState extends JsonField {
                 '4': '终止参保',
         ]
     }
+
+    CbState() {}
+
+    CbState(String value) {
+        this.value = value
+    }
 }
 
 class JfState extends JsonField {
@@ -247,4 +253,105 @@ class Cbxx implements Jsonable, JbState, XzqhName {
         if (idCard) return true
         false
     }
+}
+
+class DfState extends JsonField {
+    @Override
+    HashMap<String, String> getValueMap() {
+        [
+                '1': '正常发放',
+                '2': '暂停发放',
+                '3': '终止发放'
+        ]
+    }
+
+    DfState() {}
+
+    DfState(String value) {
+        this.value = value
+    }
+}
+
+class DfType extends JsonField {
+    @Override
+    HashMap<String, String> getValueMap() {
+        [
+                '801': '独生子女',
+                '802': '乡村教师',
+                '803': '乡村医生',
+                '807': '电影放映员'
+        ]
+    }
+
+    DfType() {}
+
+    DfType(String value) {
+        this.value = value
+    }
+}
+
+/**
+ * 代发人员名单查询
+ */
+class DfryQuery extends PageRequest {
+    String aaf013 = ''
+    String aaf030 = ''
+
+    @SerializedName('aae100')
+    CbState cbState // 居保参保状态
+
+    String aac002 = ''
+    String aac003 = ''
+
+    @SerializedName('aae116')
+    DfState state
+
+    String aac082 = ''
+
+    @SerializedName('aac066')
+    DfType type
+
+    DfryQuery(String type, String cbState, String dfState, int page = 1, int pageSize = 1000) {
+        super('executeDfrymdQuery', page, pageSize, ['dataKey': 'aaf103', 'sortDirection': 'ascending'])
+
+        this.type = new DfType(type)
+        this.cbState = new CbState(cbState)
+        this.state = new DfState(dfState)
+    }
+}
+
+@ToString
+class Dfry implements Jsonable {
+    @SerializedName('aac001')
+    int pid // 个人编号
+
+    @SerializedName('aac002')
+    String idCard // 身份证号码
+
+    @SerializedName('aac003')
+    String name
+
+    @SerializedName('aaf103')
+    String csName // 村社区名称
+
+    @SerializedName('aic160')
+    int startYearMonth // 代发开始年月
+
+    @SerializedName('aae019')
+    BigDecimal standard // 代发标准
+
+    @SerializedName('aac066s')
+    DfType type // 代发类型
+
+    @SerializedName('aae116')
+    DfState dfState // 代发状态
+
+    @SerializedName('aac008s')
+    CbState cbState // 居保状态
+
+    @SerializedName('aae002jz')
+    int endYearMonth // 代发截至成功发放年月
+
+    @SerializedName('aae019jz')
+    BigDecimal totalPayed // 代发截至成功发放金额
 }

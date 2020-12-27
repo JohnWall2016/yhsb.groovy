@@ -56,4 +56,9 @@ task(cjb) {
         main = 'yhsb.app.cjb.Query'
         classpath = sourceSets.main.runtimeClasspath
     }
+
+    task(otherPayment, dependsOn: 'classes', type: JavaExec) {
+        main = 'yhsb.app.cjb.OtherPayment'
+        classpath = sourceSets.main.runtimeClasspath
+    }
 }

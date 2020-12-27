@@ -51,6 +51,15 @@ class StringExtensions {
     ) {
         self.pad(width, padChar, specialChars, false)
     }
+
+    static String insertBeforeLast(String str, String insert, String pattern = '.') {
+        def index = str.lastIndexOf(pattern)
+        if (index >= 0) {
+            str.substring(0, index) + insert + str.substring(index)
+        } else {
+            str + insert
+        }
+    }
 }
 
 interface IsCase {
