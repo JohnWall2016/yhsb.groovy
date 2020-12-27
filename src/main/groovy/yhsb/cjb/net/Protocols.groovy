@@ -84,6 +84,7 @@ class JbKind extends JsonField {
 
 trait JbState {
     abstract CbState getCbState()
+
     abstract JfState getJfState()
 
     String getJbState() {
@@ -183,9 +184,11 @@ class Xzqh {
 
 trait XzqhName {
     abstract String getCzName()
+
     String getDwName() {
         Xzqh.getDwName(czName)
     }
+
     Tuple2<String, String> getDwAndCsName() {
         Xzqh.getDwAndCsName(czName)
     }
