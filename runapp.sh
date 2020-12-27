@@ -1,1 +1,1 @@
-./gradlew -q -I init.gradle $*
+groovy ./runapp.groovy $*

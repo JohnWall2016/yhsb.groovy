@@ -45,22 +45,14 @@ dependencies {
     implementation 'org.apache.poi:poi:4.1.2'
     implementation 'org.apache.poi:poi-ooxml:4.1.2'
 
+    implementation 'info.picocli:picocli:4.5.2'
+
     // Use the awesome Spock testing and specification framework
     testImplementation 'org.spockframework:spock-core:2.0-M4-groovy-3.0'
 }
 
-class CustomArgsJavaExec extends JavaExec {
-    CustomArgsJavaExec() {
-        super()
-        if (project.gradle.hasProperty("appArgs")) {
-            List<String> appArgs = project.gradle.appArgs
-            args appArgs
-        }
-    }
-}
-
 task(cjb) {
-    task(query, dependsOn: 'classes', type: CustomArgsJavaExec) {
+    task(query, dependsOn: 'classes', type: JavaExec) {
         main = 'yhsb.app.cjb.Query'
         classpath = sourceSets.main.runtimeClasspath
     }

@@ -171,6 +171,16 @@ class Xzqh {
         null
     }
 
+    static String getCsName(String fullName) {
+        for (r in regExps) {
+            def m = fullName =~ r
+            if (m.find()) {
+                return m.group(3)
+            }
+        }
+        null
+    }
+
     static Tuple2<String, String> getDwAndCsName(String fullName) {
         for (r in regExps) {
             def m = fullName =~ r
@@ -187,6 +197,10 @@ trait XzqhName {
 
     String getDwName() {
         Xzqh.getDwName(czName)
+    }
+
+    String getCsName() {
+        Xzqh.getCsName(czName)
     }
 
     Tuple2<String, String> getDwAndCsName() {
