@@ -341,7 +341,7 @@ class Dfry implements Jsonable {
     BigDecimal standard // 代发标准
 
     @SerializedName('aac066s')
-    DfType type // 代发类型
+    String type // 代发类型
 
     @SerializedName('aae116')
     DfState dfState // 代发状态

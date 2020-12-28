@@ -40,6 +40,9 @@ class DfPayment extends CommandWithHelp {
         @Option(names = ['-a', '--all'], description = '导出所有居保正常代发人员')
         boolean all = false
 
+        @Option(names = ['-e', '--estimate'], description = '是否测算代发金额')
+        boolean estimate = false
+
         @Override
         void run() {
             def workbook = Excels.load(personListTemplate)
@@ -56,6 +59,9 @@ class DfPayment extends CommandWithHelp {
                 def result = sess.getResult(Dfry)
                 result.each { dfry ->
                     if (!dfry.pid) return
+
+                    println("${dfry.name.padRight(8)}${dfry.idCard}")
+
                     if (!all && dfry.dfState.value != '1') return
                     if (dfry.dfState.value != '1' &&
                             !(dfry.dfState.value == '2' &&
@@ -84,33 +90,32 @@ class DfPayment extends CommandWithHelp {
                         return
                     }
 
-                    sheet.getOrCopyRow(currentRow++, startRow).with {
+                    sheet.getOrCopyRow(currentRow++, startRow, true).with {
                         getCell('A').cellValue = currentRow - startRow
                         getCell('B').cellValue = dfry.csName
                         getCell('C').cellValue = dfry.name
                         getCell('D').cellValue = dfry.idCard
                         getCell('E').cellValue = dfry.startYearMonth
                         getCell('F').cellValue = dfry.standard
-                        getCell('G').cellValue = dfry.type.toString()
+                        getCell('G').cellValue = dfry.type
                         getCell('H').cellValue = dfry.dfState.toString()
                         getCell('I').cellValue = dfry.cbState.toString()
-                        getCell('J').cellValue = dfry.endYearMonth
-                        if (dfry.totalPayed) {
-                            getCell('K').cellValue = dfry.totalPayed
-                            payedSum += dfry.totalPayed
-                        }
-                        getCell('L').cellValue = payAmount
+                        getCell('J').cellValue = dfry.endYearMonth ?: ""
+                        getCell('K').cellValue = dfry.totalPayed ?: ""
+                        payedSum += dfry.totalPayed ?: 0
+                        if (estimate) getCell('L').cellValue = payAmount
                         sum += payAmount
                     }
                 }
 
-                sheet.getOrCopyRow(currentRow, startRow).with {
+                sheet.getOrCopyRow(currentRow, startRow, true).with {
                     getCell('A').cellValue = ''
                     getCell('C').cellValue = '共计'
                     getCell('D').cellValue = currentRow - startRow
+                    getCell('E').cellValue = ''
                     getCell('F').cellValue = ''
                     getCell('J').cellValue = '合计'
-                    getCell('K').cellValue = payedSum
+                    if (estimate) getCell('K').cellValue = payedSum
                     getCell('L').cellValue = sum
                 }
 
