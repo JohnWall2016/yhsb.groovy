@@ -112,7 +112,7 @@ class DfPayment extends CommandWithHelp {
                         getCell('J').cellValue = dfry.endYearMonth ?: ""
                         getCell('K').cellValue = dfry.totalPayed ?: ""
                         payedSum += dfry.totalPayed ?: 0
-                        if (estimate) getCell('L').cellValue = payAmount
+                        if (estimate) getCell('L').cellValue = payAmount ?: ""
                         sum += payAmount
                     }
                 }
@@ -124,8 +124,8 @@ class DfPayment extends CommandWithHelp {
                     getCell('E').cellValue = ''
                     getCell('F').cellValue = ''
                     getCell('J').cellValue = '合计'
-                    if (estimate) getCell('K').cellValue = payedSum
-                    getCell('L').cellValue = sum
+                    getCell('K').cellValue = payedSum ?: ""
+                    if (estimate) getCell('L').cellValue = sum ?: ""
                 }
 
                 workbook.save(personListTemplate.insertBeforeLast("(${new DfType(type)}${all ? 'ALL' : ''})$date"))
