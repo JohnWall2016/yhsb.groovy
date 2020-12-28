@@ -355,3 +355,136 @@ class Dfry implements Jsonable {
     @SerializedName('aae019jz')
     BigDecimal totalPayed // 代发截至成功发放金额
 }
+
+class DfzfType extends JsonField {
+    @Override
+    HashMap<String, String> getValueMap() {
+        [
+                'DF0001': '独生子女',
+                'DF0002': '乡村教师',
+                'DF0003': '乡村医生',
+                'DF0007': '电影放映员'
+        ]
+    }
+
+    DfzfType() {}
+
+    DfzfType(String value) {
+        this.value = value
+    }
+}
+
+/**
+ * 代发支付单查询
+ */
+class DfzfdQuery extends PageRequest {
+    @SerializedName('aaa121')
+    String type // 代发类型
+
+    @SerializedName('aaz031')
+    String payList = '' // 支付单号
+
+    @SerializedName('aae002')
+    String yearMonth // 发放年月
+
+    @SerializedName('aae089')
+    String state
+
+    DfzfdQuery(String type, String yearMonth, String state = '0') {
+        super('dfpayffzfdjQuery')
+        this.type = type
+        this.yearMonth = yearMonth
+        this.state = state
+    }
+}
+
+@ToString
+class Dfzfd implements Jsonable {
+    @SerializedName('aaa121')
+    String typeCh // 业务类型中文名
+
+    @SerializedName('aaz031')
+    int payList // 付款单号
+}
+
+/**
+ * 代发支付单明细查询
+ */
+class DfzfdmxQuery extends PageRequest {
+    @SerializedName('aaz031')
+    String payList // 付款单号
+
+    DfzfdmxQuery(int payList, int page = 1, int pageSize = 500) {
+        super('dfpayffzfdjmxQuery', page, pageSize)
+        this.payList = "$payList"
+    }
+}
+
+@ToString
+class Dfzfdmx implements Jsonable {
+    @SerializedName('aac001')
+    int pid // 个人编号
+
+    @SerializedName('aac002')
+    String idCard // 身份证号码
+
+    @SerializedName('aac003')
+    String name
+
+    @SerializedName('aaf103')
+    String csName // 村社区名称
+
+    @SerializedName('aae117')
+    String flag // 支付标志
+
+    @SerializedName('aae002')
+    int yearMonth // 发放年月
+
+    @SerializedName('aaz031')
+    int payList // 付款单号
+
+    @SerializedName('aaz220')
+    long personalPayList // 个人单号
+
+    @SerializedName('aae019')
+    BigDecimal amount // 支付总金额
+}
+
+/**
+ * 代发支付单个人明细查询
+ */
+class DfzfdgrmxQuery extends PageRequest {
+    @SerializedName('aac001')
+    String pid // 个人编号
+
+    @SerializedName('aaz031')
+    String payList // 付款单号
+
+    @SerializedName('aaz220')
+    String personalPayList // 个人单号
+
+    DfzfdgrmxQuery(int pid, int payList, long personalPayList, int page = 1, int pageSize = 500) {
+        super('dfpayffzfdjgrmxQuery', page, pageSize)
+        this.pid = "$pid"
+        this.payList = "$payList"
+        this.personalPayList = "$personalPayList"
+    }
+}
+
+@ToString
+class Dfzfdgrmx implements Jsonable {
+    @SerializedName('aae003')
+    int date // 待遇日期
+
+    @SerializedName('aae117')
+    String flag // 支付标志
+
+    @SerializedName('aae002')
+    int yearMonth // 发放年月
+
+    @SerializedName('aaz031')
+    int payList // 付款单号
+
+    @SerializedName('aae019')
+    BigDecimal amount // 支付总金额
+}

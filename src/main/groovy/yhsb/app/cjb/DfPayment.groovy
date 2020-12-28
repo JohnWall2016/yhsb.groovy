@@ -10,9 +10,18 @@ import yhsb.base.util.Excels
 import yhsb.cjb.net.DfType
 import yhsb.cjb.net.Dfry
 import yhsb.cjb.net.DfryQuery
+import yhsb.cjb.net.DfzfType
+import yhsb.cjb.net.Dfzfd
+import yhsb.cjb.net.DfzfdQuery
+import yhsb.cjb.net.Dfzfdgrmx
+import yhsb.cjb.net.DfzfdgrmxQuery
+import yhsb.cjb.net.Dfzfdmx
+import yhsb.cjb.net.DfzfdmxQuery
 import yhsb.cjb.net.Session
 
-@Command(description = '代发数据导出制表程序', subcommands = [PersonList])
+import java.text.Collator
+
+@Command(description = '代发数据导出制表程序', subcommands = [PersonList, PayList])
 class DfPayment extends CommandWithHelp {
     static void main(String[] args) {
         new CommandLine(new DfPayment()).execute(args)
@@ -121,6 +130,104 @@ class DfPayment extends CommandWithHelp {
 
                 workbook.save(personListTemplate.insertBeforeLast("(${new DfType(type)}${all ? 'ALL' : ''})$date"))
             }
+        }
+    }
+
+    @Command(name = 'payList', description = '代发支付明细导出')
+    static class PayList extends CommandWithHelp {
+        @Parameters(
+                description = '业务类型: DF0001 - 独生子女, DF0002 - 乡村教师, DF0003 - 乡村医生, DF0007 - 电影放映员')
+        String type
+
+        @Parameters(
+                description = '支付年月: 格式 YYYYMM, 如 201901')
+        String date
+
+        static class Item {
+            String csName, name, idCard, type
+            int yearMonth, startDate, endDate
+            BigDecimal amount
+        }
+
+        @Override
+        void run() {
+            List<Item> items = []
+            BigDecimal total = 0
+            def zfType = new DfzfType(type)
+
+            Session.use { sess ->
+                sess.sendService(new DfzfdQuery(type, date))
+                def result = sess.getResult(Dfzfd)
+                result.each { dfzfd ->
+                    if (dfzfd.typeCh) {
+                        sess.sendService(new DfzfdmxQuery(dfzfd.payList))
+                        def mxResult = sess.getResult(Dfzfdmx)
+                        mxResult.each { dfzfdmx ->
+                            if (dfzfdmx.csName && dfzfdmx.flag == '0') {
+                                sess.sendService(new DfzfdgrmxQuery(dfzfdmx.pid, dfzfdmx.payList, dfzfdmx.personalPayList))
+                                def grmxResult = sess.getResult(Dfzfdgrmx)
+                                def startDate = null, endDate = null
+                                def count = result.size()
+                                if (count > 0) {
+                                    startDate = grmxResult[0].date
+                                    if (count > 2) {
+                                        endDate = grmxResult[count - 2].date
+                                    } else {
+                                        endDate = startDate
+                                    }
+                                }
+                                total += dfzfdmx.amount
+                                items.add(
+                                        new Item(
+                                                csName: dfzfdmx.csName,
+                                                name: dfzfdmx.name,
+                                                idCard: dfzfdmx.idCard,
+                                                type: zfType.toString(),
+                                                yearMonth: dfzfdmx.yearMonth,
+                                                startDate: startDate ?: 0,
+                                                endDate: endDate ?: 0,
+                                                amount: dfzfdmx.amount
+                                        )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            items.sort(true) { e1, e2 ->
+                Collator.getInstance(Locale.CHINESE).compare(e1.csName, e2.csName)
+            }
+
+            def workbook = Excels.load(payListTemplate)
+            def sheet = workbook.getSheetAt(0)
+            int startRow = 3, currentRow = 3
+            def date = DateTime.format('yyyyMMdd')
+            def dateCh = DateTime.format('yyyy年M月d日')
+            sheet.getCell('G2').cellValue = "制表时间：$dateCh"
+
+            for (item in items) {
+                sheet.getOrCopyRow(currentRow++, startRow, true).with {
+                    getCell('A').cellValue = currentRow - startRow
+                    getCell('B').cellValue = item.csName
+                    getCell('C').cellValue = item.name
+                    getCell('D').cellValue = item.idCard
+                    getCell('E').cellValue = item.type
+                    getCell('F').cellValue = item.yearMonth ?: ''
+                    getCell('G').cellValue = item.startDate ?: ''
+                    getCell('H').cellValue = item.endDate ?: ''
+                    getCell('I').cellValue = item.amount
+                }
+            }
+
+            sheet.getOrCopyRow(currentRow, startRow, true).with {
+                getCell('C').cellValue = '共计'
+                getCell('D').cellValue = currentRow - startRow
+                getCell('H').cellValue = '合计'
+                getCell('I').cellValue = total
+            }
+
+            workbook.save(payListTemplate.insertBeforeLast("(${zfType.toString()})$date"))
         }
     }
 }

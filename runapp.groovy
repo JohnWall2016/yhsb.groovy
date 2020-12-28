@@ -8,13 +8,13 @@ def (tasks, args) = args.split {
     isTask
 }
 
-def cmd = ''
+def cmd
 if (System.getProperty("os.name").startsWith('Windows')) {
     cmd = ['./gradlew.bat', '-q', *tasks, "--args=${args.drop(1).join(' ')}"]
 } else {
     cmd = ['./gradlew', '-q', *tasks, "--args=${args.drop(1).join(' ')}"]
 }
-println cmd
+// println cmd
 
 cmd.execute().with {
     waitForProcessOutput(System.out, System.err)
