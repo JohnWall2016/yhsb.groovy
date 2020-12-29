@@ -52,10 +52,11 @@ class Audit extends CommandWithHelp implements DateRange, Export {
 
             Jzfp2020Db.datastore.withNewSession {
                 for (cbsh in result) {
+                    def msg = "${cbsh.idCard} ${cbsh.name.padRight(6)} ${cbsh.birthDay}"
+
                     def info = FpHistoryData.find {
                         idCard == cbsh.idCard
                     }
-                    def msg = "${cbsh.idCard} ${cbsh.name.padRight(6)} ${cbsh.birthDay}"
                     if (info) {
                         println "$msg ${info.jbrdsf ?: ""} ${cbsh.name != info.name ? info.name : ''}"
                         changeList.add(
