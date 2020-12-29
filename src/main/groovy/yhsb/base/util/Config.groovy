@@ -15,10 +15,10 @@ class Config {
 }
 
 class ConfigExtensions {
-    static Map<String, String> toMap(com.typesafe.config.Config config) {
-        def map = new LinkedHashMap()
+    static Map<String, Object> toMap(com.typesafe.config.Config config) {
+        Map<String, Object> map = [:]
         config.entrySet().each { Map.Entry<String, ConfigValue> entry ->
-            map[entry.key] = entry.value.unwrapped().toString()
+            map[entry.key] = entry.value.unwrapped()
         }
         map
     }

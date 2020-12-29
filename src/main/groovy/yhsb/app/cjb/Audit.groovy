@@ -57,6 +57,7 @@ class Audit extends CommandWithHelp implements DateRange, Export {
                     def info = FpHistoryData.find {
                         idCard == cbsh.idCard
                     }
+
                     if (info) {
                         println "$msg ${info.jbrdsf ?: ""} ${cbsh.name != info.name ? info.name : ''}"
                         changeList.add(
