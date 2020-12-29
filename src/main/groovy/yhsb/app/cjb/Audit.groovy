@@ -55,9 +55,9 @@ class Audit extends CommandWithHelp implements DateRange, Export {
                     def info = FpHistoryData.find {
                         idCard == cbsh.idCard
                     }
+                    def msg = "${cbsh.idCard} ${cbsh.name.padRight(6)} ${cbsh.birthDay}"
                     if (info) {
-                        println "${cbsh.idCard} ${cbsh.name.padRight(6)} ${cbsh.birthDay}  " +
-                                "${info.jbrdsf ?: ""} ${cbsh.name != info.name ? info.name : ''}"
+                        println "$msg ${info.jbrdsf ?: ""} ${cbsh.name != info.name ? info.name : ''}"
                         changeList.add(
                                 new ChangeInfo(
                                         idCard: cbsh.idCard,
@@ -65,6 +65,8 @@ class Audit extends CommandWithHelp implements DateRange, Export {
                                         jbsf: JbKind.map.inverse().getOrDefault(info.jbrdsf, "")
                                 )
                         )
+                    } else {
+                        println msg
                     }
                 }
             }
