@@ -54,6 +54,8 @@ class DfPayment extends CommandWithHelp {
 
         @Override
         void run() {
+            println '开始导出数据'
+
             def workbook = Excels.load(personListTemplate)
             def sheet = workbook.getSheetAt(0)
 
@@ -63,6 +65,7 @@ class DfPayment extends CommandWithHelp {
             def date = DateTime.format('yyyyMMdd')
             def dateCh = DateTime.format('yyyy年M月d日')
             sheet.getCell('G2').cellValue = "制表时间：$dateCh"
+
             Session.use { sess ->
                 sess.sendService(new DfryQuery(type, '1', ''))
                 def result = sess.getResult(Dfry)
@@ -126,10 +129,13 @@ class DfPayment extends CommandWithHelp {
                     getCell('J').cellValue = '合计'
                     getCell('K').cellValue = payedSum ?: ""
                     if (estimate) getCell('L').cellValue = sum ?: ""
+                    null
                 }
 
                 workbook.save(personListTemplate.insertBeforeLast("(${new DfType(type)}${all ? 'ALL' : ''})$date"))
             }
+
+            println '结束数据导出'
         }
     }
 

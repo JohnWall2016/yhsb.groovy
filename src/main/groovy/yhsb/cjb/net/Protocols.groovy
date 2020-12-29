@@ -488,3 +488,43 @@ class Dfzfdgrmx implements Jsonable {
     @SerializedName('aae019')
     BigDecimal amount // 支付总金额
 }
+
+class CbshQuery extends PageRequest {
+    String aaf013 = ''
+    String aaf030 = ''
+    String aae011 = ''
+    String aae036 = ''
+    String aae036s = ''
+    String aae014 = ''
+    String aac009 = ''
+    String aac002 = ''
+    String aac003 = ''
+    String sfccb = ''
+
+    @SerializedName('aae015')
+    String startDate
+
+    @SerializedName('aae015s')
+    String endDate
+
+    @SerializedName('aae016')
+    String shState
+
+    CbshQuery(String startDate, String endDate, String shState = '1') {
+        super('cbshQuery', 500)
+        this.startDate = startDate
+        this.endDate = endDate
+        this.shState = shState
+    }
+}
+
+class Cbsh implements Jsonable {
+    @SerializedName('aac002')
+    String idCard
+
+    @SerializedName('aac003')
+    String name
+
+    @SerializedName('aac006')
+    String birthDay
+}

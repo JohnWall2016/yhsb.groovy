@@ -80,15 +80,15 @@ class Query extends CommandWithHelp {
                     def name = row.getCell(nameCol).value
                     def idCard = row.getCell(idCardCol).value.trim().toUpperCase()
 
-                    println "更新 ${name.padRight(8)}$idCard"
-
                     sess.sendService(new CbxxQuery(idCard))
                     def result = sess.getResult(Cbxx)
+                    def state = '未参保'
                     if (!result.isEmpty() && result[0].valid()) {
-                        row.getOrCreateCell(upInfoCol).cellValue = result[0].jbState
-                    } else {
-                        row.getOrCreateCell(upInfoCol).cellValue = '未参保'
+                        state = result[0].jbState
                     }
+
+                    println "更新 ${name.padRight(8)}$idCard $state"
+                    row.getOrCreateCell(upInfoCol).cellValue = state
                 }
             }
 

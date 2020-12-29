@@ -141,6 +141,12 @@ class PageRequest extends Request {
         super(id)
     }
 
+    PageRequest(String id, int pageSize) {
+        super(id)
+        this.page = 1
+        this.pageSize = pageSize
+    }
+
     PageRequest(String id, int page, int pageSize) {
         super(id)
         this.page = page
