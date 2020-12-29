@@ -8,8 +8,6 @@ import groovyjarjarantlr4.v4.runtime.misc.Tuple2
 import yhsb.base.util.JsonField
 import yhsb.base.util.Jsonable
 
-import java.util.regex.Matcher
-
 class SysLogin extends Request {
     SysLogin(String userName, String password) {
         super('syslogin')
@@ -66,10 +64,10 @@ class JfState extends JsonField {
 class JbKind extends JsonField {
     @Override
     Map<String, String> getValueMap() {
-        jbKindMap
+        map
     }
 
-    static final BiMap<String, String> jbKindMap = HashBiMap.create([
+    static final BiMap<String, String> map = HashBiMap.create([
             '011': '普通参保人员',
             '021': '残一级',
             '022': '残二级',

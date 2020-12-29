@@ -1,3 +1,3 @@
 package yhsb.cjb.net
 
-println JbKind.jbKindMap['011']
+println JbKind.map['011']
