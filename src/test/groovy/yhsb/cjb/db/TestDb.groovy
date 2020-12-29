@@ -31,6 +31,7 @@ class TestDb {
                 'dataSource.username'       : 'root',
                 'dataSource.password'       : 'root',
                 'dataSource.logSql'         : 'true',
+                'hibernate.naming_strategy' : 'org.hibernate.cfg.DefaultNamingStrategy'
         ], JbHistoryData)
         datastore
     }
