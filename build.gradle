@@ -71,4 +71,9 @@ task(cjb) {
         main = 'yhsb.app.cjb.SplitExcel'
         classpath = sourceSets.main.runtimeClasspath
     }
+
+    task(clearSf, dependsOn: 'classes', type: JavaExec) {
+        main = 'yhsb.app.cjb.ClearSf'
+        classpath = sourceSets.main.runtimeClasspath
+    }
 }
