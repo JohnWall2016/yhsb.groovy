@@ -178,6 +178,36 @@ class ExcelExtensions {
         sheet.getCell(cellName)
     }
 
+    static void deleteRow(Sheet sheet, int rowIndex) {
+        /*int lastRowNum = sheet.lastRowNum
+        if (rowIndex >= 0 && rowIndex < lastRowNum) {
+            sheet.shiftRows(rowIndex + 1, lastRowNum, -1)
+        }
+        if (rowIndex == lastRowNum) {
+            Row removingRow = sheet.getRow(rowIndex)
+            if (removingRow != null) {
+                sheet.removeRow(removingRow)
+            }
+        }*/
+        deleteRows(sheet, rowIndex, 1)
+    }
+
+    static void deleteRows(Sheet sheet, int rowIndex, int count) {
+        int lastRowNum = sheet.lastRowNum
+        if (rowIndex >= 0 && rowIndex <= lastRowNum && count > 0) {
+            int endRowIndex = Math.min(rowIndex + count, lastRowNum)
+            (rowIndex..((endRowIndex == lastRowNum) ? endRowIndex : endRowIndex - 1)).each {
+                def row = sheet.getRow(it)
+                if (row != null) {
+                    sheet.removeRow(row)
+                }
+            }
+            if (endRowIndex != lastRowNum) {
+                sheet.shiftRows(endRowIndex, lastRowNum, rowIndex - endRowIndex)
+            }
+        }
+    }
+
     static Cell getCell(Row row, String columnName) {
         row.getCell(CellRef.columnNameToNumber(columnName) - 1)
     }

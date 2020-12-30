@@ -66,4 +66,9 @@ task(cjb) {
         main = 'yhsb.app.cjb.Audit'
         classpath = sourceSets.main.runtimeClasspath
     }
+
+    task(splitExcel, dependsOn: 'classes', type: JavaExec) {
+        main = 'yhsb.app.cjb.SplitExcel'
+        classpath = sourceSets.main.runtimeClasspath
+    }
 }
