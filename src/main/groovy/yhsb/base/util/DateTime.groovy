@@ -7,7 +7,7 @@ class DateTime {
         new SimpleDateFormat(pattern).format(date)
     }
 
-    static String toDashedDate(String date, String dateFormat = /^(\\d\\d\\d\\d)(\\d\\d)(\\d\\d)$/) {
+    static String toDashedDate(String date, String dateFormat = /^(\d\d\d\d)(\d\d)(\d\d)$/) {
         def m = date =~ dateFormat
         if (m.find()) {
             "${m.group(1)}-${m.group(2)}-${m.group(3)}"

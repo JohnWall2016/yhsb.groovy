@@ -37,7 +37,7 @@ class Audit extends CommandWithHelp implements DateRange, Export {
         def startDate = DateTime.toDashedDate(startDate)
         def endDate = endDate ? DateTime.toDashedDate(endDate) : ''
 
-        def timeSpan = endDate ? "${startDate}_$endDate" : startDate
+        def timeSpan = endDate ? "${startDate}-$endDate" : startDate
         println timeSpan
 
         def result = Session.use {
@@ -86,7 +86,7 @@ class Audit extends CommandWithHelp implements DateRange, Export {
                     }
                 }
 
-                workbook.save(Paths.get(outputDir, "批量信息变更${timeSpan}.xls"))
+                workbook.save(Paths.get(outputDir, "批量信息变更(${timeSpan})${DateTime.format()}.xls"))
             }
         }
     }

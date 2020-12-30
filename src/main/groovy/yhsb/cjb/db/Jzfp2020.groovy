@@ -1,11 +1,9 @@
 package yhsb.cjb.db
 
 import grails.gorm.annotation.Entity
+import groovy.transform.ToString
 import org.grails.datastore.gorm.GormEntity
 import org.grails.orm.hibernate.HibernateDatastore
-import org.hibernate.annotations.common.util.StringHelper
-import org.hibernate.cfg.DefaultNamingStrategy
-import org.hibernate.cfg.ImprovedNamingStrategy
 import yhsb.base.util.Config
 
 trait FpData {
@@ -37,24 +35,12 @@ trait FpData {
 }
 
 @Entity
+@ToString
 class FpHistoryData implements FpData, GormEntity<FpHistoryData> {
     static mapping = {
         table 'fphistorydata'
         version false
         id name: 'no'
-        naming_strategy new DefaultNamingStrategy()
-    }
-}
-
-class CustomNamingStrategy extends ImprovedNamingStrategy {
-    String classToTableName(String className) {
-        println className
-        className
-    }
-
-    String propertyToColumnName(String propertyName) {
-        println propertyName
-        propertyName
     }
 }
 
