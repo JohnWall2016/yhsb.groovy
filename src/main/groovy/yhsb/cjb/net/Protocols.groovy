@@ -478,7 +478,7 @@ class Dfzfdgrmx implements Jsonable {
     String flag // 支付标志
 
     @SerializedName('aae002')
-    int yearMonth // 发放年月
+    String yearMonth // 发放年月
 
     @SerializedName('aaz031')
     int payList // 付款单号

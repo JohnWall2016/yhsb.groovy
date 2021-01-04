@@ -173,7 +173,7 @@ class DfPayment extends CommandWithHelp {
                                 sess.sendService(new DfzfdgrmxQuery(dfzfdmx.pid, dfzfdmx.payList, dfzfdmx.personalPayList))
                                 def grmxResult = sess.getResult(Dfzfdgrmx)
                                 def startDate = null, endDate = null
-                                def count = result.size()
+                                def count = grmxResult.size()
                                 if (count > 0) {
                                     startDate = grmxResult[0].date
                                     if (count > 2) {
@@ -227,8 +227,11 @@ class DfPayment extends CommandWithHelp {
             }
 
             sheet.getOrCopyRow(currentRow, startRow, true).with {
+                getCell('A').cellValue = ''
                 getCell('C').cellValue = '共计'
                 getCell('D').cellValue = currentRow - startRow
+                getCell('F').cellValue = ''
+                getCell('G').cellValue = ''
                 getCell('H').cellValue = '合计'
                 getCell('I').cellValue = total
             }

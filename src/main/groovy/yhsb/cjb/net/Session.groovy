@@ -247,9 +247,17 @@ class Result<T extends Jsonable> implements Iterable<T>, Jsonable {
     }
 
     static <T extends Jsonable> Result<T> fromJson(String json, Class<T> classOfT) {
-        def typeOf = TypeToken
-                .getParameterized(Result, classOfT)
-                .getType()
-        Json.fromJson(json, typeOf)
+        try {
+            def typeOf = TypeToken
+                    .getParameterized(Result, classOfT)
+                    .getType()
+            Result result = Json.fromJson(json, typeOf)
+            result.json = json
+            result
+        } catch (Exception ex) {
+            throw new Exception("Parse Json Exception: $json" , ex)
+        }
     }
+
+    String json
 }
