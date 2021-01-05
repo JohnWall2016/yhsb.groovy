@@ -526,3 +526,39 @@ class Cbsh implements Jsonable {
     @SerializedName('aac006')
     String birthDay
 }
+
+class BankInfoQuery extends Request {
+    BankInfoQuery(String idCard) {
+        super('executeSncbgrBankinfoConQ')
+        this.idCard = idCard
+    }
+
+    @SerializedName('aac002')
+    String idCard
+}
+
+class BankInfo implements Jsonable {
+    @SerializedName('bie013')
+    BankType bankType // 银行类型
+
+    @SerializedName('aae009')
+    String countName // 户名
+
+    @SerializedName('aae010')
+    String cardNumber // 卡号
+}
+
+class BankType extends JsonField {
+    @Override
+    HashMap<String, String> getValueMap() {
+        [
+                'LY': '中国农业银行',
+                'ZG': '中国银行',
+                'JS': '中国建设银行',
+                'NH': '农村信用合作社',
+                'YZ': '邮政',
+                'JT': '交通银行',
+                'GS': '中国工商银行',
+        ]
+    }
+}

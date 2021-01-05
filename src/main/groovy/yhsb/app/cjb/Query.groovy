@@ -1,15 +1,19 @@
 package yhsb.app.cjb
 
 import picocli.CommandLine
+import picocli.CommandLine.Option
 import picocli.CommandLine.Command
 import picocli.CommandLine.Parameters
 import yhsb.base.util.CommandWithHelp
 import yhsb.base.util.Excels
+import yhsb.base.util.UpInfoParameters
+import yhsb.cjb.net.BankInfo
+import yhsb.cjb.net.BankInfoQuery
 import yhsb.cjb.net.Cbxx
 import yhsb.cjb.net.CbxxQuery
 import yhsb.cjb.net.Session
 
-@Command(description = '城居保信息查询程序', subcommands = [GrinfoQuery, UpInfo])
+@Command(description = '城居保信息查询程序', subcommands = [GrinfoQuery, UpInfo, UpBankInfo])
 class Query extends CommandWithHelp {
     static void main(String[] args) {
         //println args
@@ -21,7 +25,7 @@ class Query extends CommandWithHelp {
         CommandLine.usage(new Query(), System.out)
     }
 
-    @Command(name = 'grinfo', description = '个人综合查询')
+    @Command(name = 'qryInfo', description = '个人综合查询')
     static class GrinfoQuery extends CommandWithHelp {
         @Parameters(description = "身份证号码")
         String[] idCards
@@ -30,7 +34,7 @@ class Query extends CommandWithHelp {
         void run() {
             //println idCards
             if (idCards) {
-                Session.use {sess ->
+                Session.use { sess ->
                     for (idCard in idCards) {
                         sess.sendService(new CbxxQuery(idCard))
                         def result = sess.getResult(Cbxx)
@@ -47,26 +51,8 @@ class Query extends CommandWithHelp {
         }
     }
 
-    @Command(name = 'upinfo', description = '更新excel表格中人员参保信息')
-    static class UpInfo extends CommandWithHelp {
-        @Parameters(description = 'excel表格文件路径')
-        String excel
-
-        @Parameters(description = '开始行(从1开始)')
-        int startRow
-
-        @Parameters(description = '结束行(包含在内)')
-        int endRow
-
-        @Parameters(description = '姓名所在列, 例如: H')
-        String nameCol
-
-        @Parameters(description = '身份证所在列, 例如: I')
-        String idCardCol
-
-        @Parameters(description = '更新状态信息所在列, 例如: J')
-        String upInfoCol
-
+    @Command(name = 'upInfo', description = '更新excel表格中人员参保信息')
+    static class UpInfo extends CommandWithHelp implements UpInfoParameters {
         @Override
         void run() {
             println '开始处理数据'
@@ -75,7 +61,7 @@ class Query extends CommandWithHelp {
             def sheet = workbook.getSheetAt(0)
 
             Session.use { sess ->
-                for (r in (startRow-1)..(endRow-1)) {
+                for (r in (startRow - 1)..(endRow - 1)) {
                     def row = sheet.getRow(r)
                     def name = row.getCell(nameCol).value
                     def idCard = row.getCell(idCardCol).value.trim().toUpperCase()
@@ -95,6 +81,40 @@ class Query extends CommandWithHelp {
             workbook.save(excel.insertBeforeLast('.up'))
 
             println '结束数据处理'
+        }
+    }
+
+    @Command(name = 'upBankInfo', description = '更新银行信息')
+    static class UpBankInfo extends CommandWithHelp implements UpInfoParameters {
+        @Option(names = ['-o', '--only-confirm'], description = '只更新是否绑定了银行卡')
+        boolean onlyConfirm = true
+
+        @Override
+        void run() {
+            def workbook = Excels.load(excel)
+            def sheet = workbook.getSheetAt(0)
+
+            Session.use { sess ->
+                for (r in (startRow - 1)..(endRow - 1)) {
+                    def row = sheet.getRow(r)
+                    def name = row.getCell(nameCol).value
+                    def idCard = row.getCell(idCardCol).value.trim().toUpperCase()
+                    def msg = "${name.padRight(8)}$idCard"
+
+                    sess.sendService(new BankInfoQuery(idCard))
+                    def result = sess.getResult(BankInfo)
+                    if (!result.empty) {
+                        msg = "$msg ${result[0].bankType} ${result[0].countName} ${result[0].cardNumber}"
+                    } else {
+                        msg = "$msg 未绑卡"
+                        if (onlyConfirm) {
+                            row.getOrCreateCell(upInfoCol).cellValue = '未绑卡'
+                        }
+                    }
+                    println msg
+                }
+            }
+            workbook.save(excel.insertBeforeLast('.up'))
         }
     }
 }
