@@ -86,8 +86,8 @@ class Query extends CommandWithHelp {
 
     @Command(name = 'upBankInfo', description = '更新银行信息')
     static class UpBankInfo extends CommandWithHelp implements UpInfoParameters {
-        @Option(names = ['-o', '--only-confirm'], description = '只更新是否绑定了银行卡')
-        boolean onlyConfirm = true
+        @Option(names = ['-o', '--only-state'], description = '是否只更新绑卡状态')
+        boolean onlyState = true
 
         @Override
         void run() {
@@ -104,10 +104,11 @@ class Query extends CommandWithHelp {
                     sess.sendService(new BankInfoQuery(idCard))
                     def result = sess.getResult(BankInfo)
                     if (!result.empty) {
-                        msg = "$msg ${result[0].bankType} ${result[0].countName} ${result[0].cardNumber}"
+                        msg = "$msg ${result[0].bankType.toString().padRight(14)}" +
+                                "${result[0].countName} ${result[0].cardNumber}"
                     } else {
                         msg = "$msg 未绑卡"
-                        if (onlyConfirm) {
+                        if (onlyState) {
                             row.getOrCreateCell(upInfoCol).cellValue = '未绑卡'
                         }
                     }
