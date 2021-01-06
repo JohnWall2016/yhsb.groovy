@@ -117,7 +117,7 @@ class Treatment extends CommandWithHelp {
             }
 
             println '生成分组目录并分别生成信息核对报告表'
-            if (Files.notExists(Path.of(outputDir))) {
+            if (Files.exists(Path.of(outputDir))) {
                 Files.move(Path.of(outputDir), Path.of(outputDir + '.orig'))
             }
             Files.createDirectory(Path.of(outputDir))
@@ -219,28 +219,27 @@ class Treatment extends CommandWithHelp {
                     getCell('K11').cellValue = payInfo.group(29)
                     getCell('L11').cellValue = payInfo.group(30)
                     getCell('M11').cellValue = payInfo.group(31)
-                    getCell('I12').cellValue = payInfo.group(
-                            DateTime.format('yyyy-MM-dd HH:mm:ss')
-                    )
+                    getCell('I12').cellValue = DateTime.format('yyyy-MM-dd HH:mm:ss')
 
                     if (!bankInfoResult.empty) {
                         def bankInfo = bankInfoResult[0]
                         getCell('B15').cellValue = bankInfo.countName ?: ''
                         getCell('F15').cellValue = bankInfo.bankType?.toString() ?: ''
-                        if (!bankInfo.cardNumber) {
-                            def card = bankInfo.cardNumber
+
+                        def card = ''
+                        if (bankInfo.cardNumber) {
+                            card = bankInfo.cardNumber
                             def l = card.length()
                             if (l > 7) {
                                 card = card.substring(0, 3) + ''.padLeft(l - 7, '*') + card.substring(l - 4)
                             } else if (l > 4) {
                                 card = ''.padLeft(l - 4, '*') + card.substring(l - 4)
                             }
-                            getCell('J15').cellValue = card
-                        } else {
-                            getCell('B15').cellValue = '未绑定银行账户'
                         }
+                        getCell('J15').cellValue = card
+                    } else {
+                        getCell('B15').cellValue = '未绑定银行账户'
                     }
-                    null
                 }
                 workbook.save(Path.of(outDir.toString(), "${name}[$idCard]养老金计算表.xlsx"))
             } else {

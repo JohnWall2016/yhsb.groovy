@@ -4,7 +4,6 @@ import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
 import com.google.gson.annotations.SerializedName
 import groovy.transform.ToString
-import groovyjarjarantlr4.v4.runtime.misc.Tuple2
 import yhsb.base.net.HttpSocket
 import yhsb.base.util.Config
 import yhsb.base.util.JsonField
