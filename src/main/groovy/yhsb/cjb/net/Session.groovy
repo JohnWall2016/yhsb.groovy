@@ -111,11 +111,10 @@ class Session extends HttpSocket {
     }
 
     static <T> T use(String user = '002', boolean autoLogin = true, Function<Session, T> func) {
-        def config = Config.load('cjb.session')
-        def usr = config.getConfig("users.$user")
+        def usr = Config.session.getConfig("users.$user")
         new Session(
-                config.getString('host'),
-                config.getInt('port'),
+                Config.session.getString('host'),
+                Config.session.getInt('port'),
                 usr.getString('id'),
                 usr.getString('pwd')
         ).withCloseable {
@@ -154,7 +153,7 @@ class PageRequest extends Request {
         this.pageSize = pageSize
     }
 
-    PageRequest(String id, int page, int pageSize, HashMap<String, String> sorting) {
+    PageRequest(String id, int page, int pageSize, Map<String, String> sorting) {
         super(id)
         this.page = page
         this.pageSize = pageSize
@@ -166,11 +165,11 @@ class PageRequest extends Request {
     @SerializedName('pagesize')
     int pageSize = 15
 
-    List<HashMap<String, String>> filtering = []
+    List<Map<String, String>> filtering = []
 
-    List<HashMap<String, String>> sorting = []
+    List<Map<String, String>> sorting = []
 
-    List<HashMap<String, String>> totals = []
+    List<Map<String, String>> totals = []
 }
 
 class JsonService<T extends Request> implements Jsonable {

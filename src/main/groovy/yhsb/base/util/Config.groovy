@@ -12,6 +12,8 @@ class Config {
             ConfigFactory.empty()
         }
     }
+
+    static com.typesafe.config.Config session = load('cjb.session')
 }
 
 class ConfigExtensions {

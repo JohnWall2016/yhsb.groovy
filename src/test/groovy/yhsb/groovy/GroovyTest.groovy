@@ -37,7 +37,7 @@ def p = new Person(name: "John")
 p.sayHello()
  */
 
-
+/*
 class Person {
 	//private String name
 	protected String name
@@ -57,3 +57,30 @@ class Man extends Person {
 
 def m = new Man('Peter')
 println m.name()
+*/
+
+/*
+class FakePerson {
+	int age
+
+	Object get(String fieldName) {
+		if (fieldName == 'name')
+			return 'John'
+		else
+			'Unknown'
+	}
+
+	void set(String fieldName, Object value) {
+		println "set($fieldName, $value)"
+	}
+}
+
+def fp = new FakePerson()
+println fp.name
+println fp.other
+fp.name = 'Peter'
+println fp.name
+println fp.age
+fp.age = 11
+println fp.age
+*/
