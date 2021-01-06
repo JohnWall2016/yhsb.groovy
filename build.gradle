@@ -76,4 +76,9 @@ task(cjb) {
         main = 'yhsb.app.cjb.ClearSf'
         classpath = sourceSets.main.runtimeClasspath
     }
+
+    task(treatment, dependsOn: 'classes', type: JavaExec) {
+        main = 'yhsb.app.cjb.Treatment'
+        classpath = sourceSets.main.runtimeClasspath
+    }
 }
