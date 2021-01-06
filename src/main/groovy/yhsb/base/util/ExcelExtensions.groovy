@@ -174,6 +174,10 @@ class ExcelExtensions {
         sheet.getRow(row).getCell(col)
     }
 
+    static Cell getCell(Sheet sheet, int row, String colName) {
+        sheet.getRow(row).getCell(colName)
+    }
+
     static Cell getAt(Sheet sheet, String cellName) {
         sheet.getCell(cellName)
     }

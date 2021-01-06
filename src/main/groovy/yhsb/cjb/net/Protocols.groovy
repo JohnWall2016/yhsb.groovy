@@ -196,7 +196,7 @@ class Xzqh {
                 return new Tuple2<>(m.group(2), m.group(3))
             }
         }
-        null
+        new Tuple2<>(null, null)
     }
 }
 
