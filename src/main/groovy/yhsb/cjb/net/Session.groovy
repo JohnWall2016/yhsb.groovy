@@ -6,7 +6,7 @@ import groovy.transform.ToString
 import yhsb.base.net.HttpRequest
 import yhsb.base.net.HttpSocket
 import yhsb.base.util.Config
-import yhsb.base.util.DataField
+import yhsb.base.util.ListField
 import yhsb.base.util.Json
 import yhsb.base.util.Jsonable
 
@@ -223,7 +223,7 @@ class Result<T extends Jsonable> implements Iterable<T>, Jsonable {
     String messageDetail
 
     @SerializedName('datas')
-    DataField<T> data
+    ListField<T> data
 
     void add(T d) {
         data?.add(d)

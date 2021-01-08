@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 import groovy.transform.ToString
 import yhsb.base.net.HttpSocket
 import yhsb.base.util.Config
-import yhsb.base.util.JsonField
+import yhsb.base.util.MapField
 import yhsb.base.util.Jsonable
 
 import java.util.regex.Matcher
@@ -35,7 +35,7 @@ class CbxxQuery extends Request {
     String idCard
 }
 
-class CbState extends JsonField {
+class CbState extends MapField {
     @Override
     HashMap<String, String> getValueMap() {
         [
@@ -53,7 +53,7 @@ class CbState extends JsonField {
     }
 }
 
-class JfState extends JsonField {
+class JfState extends MapField {
     @Override
     HashMap<String, String> getValueMap() {
         [
@@ -64,7 +64,7 @@ class JfState extends JsonField {
     }
 }
 
-class JbKind extends JsonField {
+class JbKind extends MapField {
     @Override
     Map<String, String> getValueMap() {
         map
@@ -256,7 +256,7 @@ class Cbxx implements Jsonable, JbState, XzqhName {
     }
 }
 
-class DfState extends JsonField {
+class DfState extends MapField {
     @Override
     HashMap<String, String> getValueMap() {
         [
@@ -273,7 +273,7 @@ class DfState extends JsonField {
     }
 }
 
-class DfType extends JsonField {
+class DfType extends MapField {
     @Override
     HashMap<String, String> getValueMap() {
         [
@@ -357,7 +357,7 @@ class Dfry implements Jsonable {
     BigDecimal totalPayed // 代发截至成功发放金额
 }
 
-class DfzfType extends JsonField {
+class DfzfType extends MapField {
     @Override
     HashMap<String, String> getValueMap() {
         [
@@ -551,7 +551,7 @@ class BankInfo implements Jsonable {
     String cardNumber // 卡号
 }
 
-class BankType extends JsonField {
+class BankType extends MapField {
     @Override
     HashMap<String, String> getValueMap() {
         [

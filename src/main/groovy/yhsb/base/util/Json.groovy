@@ -10,85 +10,35 @@ import com.google.gson.JsonParseException
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import groovy.transform.PackageScope
 
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-abstract class JsonField {
-    @PackageScope
-    protected String value
-
-    String getValue() {
-        value
-    }
-
-    abstract Map<String, String> getValueMap()
-
-    String getName() {
-        if (valueMap.containsKey(value)) {
-            valueMap[value]
-        } else {
-            "未知值: $value"
-        }
-    }
-
-    @Override
-    String toString() {
-        name
-    }
-}
-
 interface JsonAdapter<T> extends JsonSerializer<T>, JsonDeserializer<T> {}
 
-class JsonFieldAdapter implements JsonAdapter<JsonField> {
+class JsonFieldAdapter implements JsonAdapter<MapField> {
     @Override
-    JsonField deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    MapField deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         def classOfT = typeOfT as Class<?>
-        def field = classOfT.getConstructor().newInstance() as JsonField
+        def field = classOfT.getConstructor().newInstance() as MapField
         field.@value = json.asString
         field
     }
 
     @Override
-    JsonElement serialize(JsonField src, Type typeOfSrc, JsonSerializationContext context) {
+    JsonElement serialize(MapField src, Type typeOfSrc, JsonSerializationContext context) {
         new JsonPrimitive(src.@value)
     }
 }
 
-class DataField<T extends Jsonable> implements Iterable<T> {
-    final List<T> items = []
-
+class DataFieldAdapter implements JsonAdapter<ListField> {
     @Override
-    Iterator<T> iterator() {
-        items.iterator()
-    }
-
-    void add(T e) {
-        items.add(e)
-    }
-
-    T getAt(int index) {
-        items[index]
-    }
-
-    int size() {
-        items.size()
-    }
-
-    boolean isEmpty() {
-        items.empty
-    }
-}
-
-class DataFieldAdapter implements JsonAdapter<DataField> {
-    @Override
-    DataField deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    ListField deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         def paramType = typeOfT as ParameterizedType
         def rawType = paramType.rawType as Class<?>
         def argType =  paramType.actualTypeArguments[0] as Class<?>
 
-        def field = rawType.getConstructor().newInstance() as DataField
+        def field = rawType.getConstructor().newInstance() as ListField
 
         if (JsonArray.isInstance(json)) {
             def array = json as JsonArray
@@ -105,7 +55,7 @@ class DataFieldAdapter implements JsonAdapter<DataField> {
     }
 
     @Override
-    JsonElement serialize(DataField src, Type typeOfSrc, JsonSerializationContext context) {
+    JsonElement serialize(ListField src, Type typeOfSrc, JsonSerializationContext context) {
         context.serialize(src, typeOfSrc)
     }
 }
@@ -114,8 +64,8 @@ class Json {
     @Lazy private static final gson =
             new GsonBuilder()
                     .serializeNulls()
-                    .registerTypeHierarchyAdapter(JsonField, new JsonFieldAdapter())
-                    .registerTypeHierarchyAdapter(DataField, new DataFieldAdapter())
+                    .registerTypeHierarchyAdapter(MapField, new JsonFieldAdapter())
+                    .registerTypeHierarchyAdapter(ListField, new DataFieldAdapter())
                     .create()
 
     static <T> String toJson(T obj) {
