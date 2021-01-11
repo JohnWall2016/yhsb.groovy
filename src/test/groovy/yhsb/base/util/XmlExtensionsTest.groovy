@@ -1,6 +1,7 @@
 package yhsb.base.util
 
 import groovy.transform.ToString
+import groovy.xml.XmlSlurper
 
 def xml = '''<?xml version="1.0" encoding="GBK"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
@@ -23,32 +24,36 @@ def xml = '''<?xml version="1.0" encoding="GBK"?>
  </soap:Envelope>'''
 
 @ToString
+@Namespaces([@NS(name = 'soap', value = 'http://schemas.xmlsoap.org/soap/envelope/')])
+@Node('soap:Envelope')
 class Envelope {
-    @Attribute(value = 'encodingStyle', namespace = 'http://schemas.xmlsoap.org/soap/envelope/')
+    @Attribute('soap:encodingStyle')
     String encodingStyle
 
-    @Tag(value = 'Header', namespace = 'http://schemas.xmlsoap.org/soap/envelope/')
+    @Node('soap:Header')
     Header header
 
-    @Tag(value = 'Body', namespace = 'http://schemas.xmlsoap.org/soap/envelope/')
+    @Node('soap:Body')
     Body body
 }
 
 @ToString
+@Namespaces([@NS(name = 'in', value = 'http://www.molss.gov.cn/')])
 class Header {
-    @Tag(value = 'system', namespace = 'http://www.molss.gov.cn/')
+    @Node('in:system')
     System system
 }
 
 @ToString
+@Namespaces([@NS(name = 'in', value = 'http://www.molss.gov.cn/')])
 class Body {
-    @Tag(value = 'business', namespace = 'http://www.molss.gov.cn/')
+    @Node('in:business')
     Business business
 }
 
 @ToString
 class System {
-    @Tags('para')
+    @Node('para')
     SysParam para
 }
 
@@ -66,7 +71,7 @@ class SysParam {
 
 @ToString
 class Business {
-    @Tags('para')
+    @Node('para')
     BssParam para
 }
 
@@ -87,13 +92,19 @@ class BssParam {
     @Attribute('functionid')
     String functionId
 }
-
+/*
 def root = Xml.rootElement(xml)
 println root
 
 def env = root.toObject(Envelope)
 println env
+*/
 
+def root = new XmlSlurper().parseText(xml)
+def env = root.toObject(Envelope)
+println env
+
+/*
 xml = '''<?xml version="1.0" encoding="GBK"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
   <soap:Header>
@@ -113,3 +124,15 @@ xml = '''<?xml version="1.0" encoding="GBK"?>
     </out:business>
   </soap:Body>
 </soap:Envelope>'''
+
+import groovy.xml.XmlSlurper
+
+def env = new XmlSlurper()
+        .parseText(xml)
+        //.declareNamespace('soap': 'http://schemas.xmlsoap.org/soap/envelope/', 'out': 'http://www.molss.gov.cn/')
+
+println env.getClass()
+println env.Header.getClass()
+println env.Header.result.getClass()
+println env.Header.result.@sessionID.getClass()
+*/
