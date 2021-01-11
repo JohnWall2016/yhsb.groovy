@@ -50,8 +50,12 @@ class Session extends HttpSocket {
                 req.toXml()
     }
 
-    void sendService(ToXml req) {
-        request(toService(req))
+    public <T extends ToXml> void sendService(InEnvelope<T> req) {
+        request(toService(req.with {
+            user = this.userId
+            password = this.password
+            it
+        }))
     }
 
     static <T> T fromJson(String xml, Class<T> classOfT) {
