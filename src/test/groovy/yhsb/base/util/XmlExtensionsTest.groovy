@@ -26,7 +26,7 @@ def xml = '''<?xml version="1.0" encoding="GBK"?>
 @ToString
 @Namespaces([@NS(name = 'soap', value = 'http://schemas.xmlsoap.org/soap/envelope/')])
 @Node('soap:Envelope')
-class Envelope {
+class Envelope implements ToXml {
     @Attribute('soap:encodingStyle')
     String encodingStyle
 
@@ -38,27 +38,27 @@ class Envelope {
 }
 
 @ToString
-@Namespaces([@NS(name = 'in', value = 'http://www.molss.gov.cn/')])
-class Header {
+class Header implements ToXml {
     @Node('in:system')
+    @Namespaces([@NS(name = 'in', value = 'http://www.molss.gov.cn/')])
     System system
 }
 
 @ToString
-@Namespaces([@NS(name = 'in', value = 'http://www.molss.gov.cn/')])
-class Body {
+class Body implements ToXml {
     @Node('in:business')
+    @Namespaces([@NS(name = 'in', value = 'http://www.molss.gov.cn/')])
     Business business
 }
 
 @ToString
-class System {
-    @Node('para')
+class System implements ToXml {
+    @Spread @Node('para')
     SysParam para
 }
 
 @ToString
-class SysParam {
+class SysParam implements ToXml {
     @Attribute('usr')
     String user
 
@@ -70,13 +70,13 @@ class SysParam {
 }
 
 @ToString
-class Business {
-    @Node('para')
+class Business implements ToXml {
+    @Spread @Node('para')
     BssParam para
 }
 
 @ToString
-class BssParam {
+class BssParam implements ToXml {
     @Attribute('startrow')
     String startRow
 
@@ -103,6 +103,8 @@ println env
 def root = new XmlSlurper().parseText(xml)
 def env = root.toObject(Envelope)
 println env
+
+println env.toXml()
 
 /*
 xml = '''<?xml version="1.0" encoding="GBK"?>
