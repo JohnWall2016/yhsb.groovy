@@ -26,6 +26,10 @@ class InEnvelope<T extends ToXml> implements ToXml {
         body = new Body<>(business: params)
     }
 
+    static InEnvelope<EmptyParams> withoutParams(String funId) {
+        new InEnvelope<EmptyParams>(funId, new EmptyParams())
+    }
+
     void setUser(String user) {
         header.system.userParams.user = user
     }

@@ -58,12 +58,20 @@ class Session extends HttpSocket {
         }))
     }
 
-    static <T> T fromJson(String xml, Class<T> classOfT) {
+    static <T> T fromXml(String xml, Class<T> classOfT) {
         new XmlSlurper().parseText(xml).toObject(classOfT)
     }
 
     public <T> T getResult(Class<T> classOfT) {
         def result = readBody()
-        fromJson(result, classOfT)
+        fromXml(result, classOfT)
+    }
+
+    String login() {
+        sendService(
+                InEnvelope.withoutParams(
+                        'F00.00.00.00|192.168.1.110|PC-20170427DGON|00-05-0F-08-1A-34'
+                )
+        )
     }
 }
