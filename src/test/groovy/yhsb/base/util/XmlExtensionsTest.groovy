@@ -19,6 +19,12 @@ def xml = '''<?xml version="1.0" encoding="GBK"?>
       <para pagesize="500"/>
       <para clientsql="( aac002 = &apos;430302195806251012&apos;)"/>
       <para functionid="F27.06"/>
+      <paraset name="paralist">
+        <row aac003="徐A" rown="1" />
+        <row aac003="徐B" rown="2" />
+        <row aac003="徐C" rown="3" />
+        <row aac003="徐D" rown="4" />
+      </paraset>
     </in:business>
   </soap:Body>
  </soap:Envelope>'''
@@ -73,6 +79,9 @@ class SysParam implements ToXml {
 class Business implements ToXml {
     @Spread @Node('para')
     BssParam para
+
+    @Node('paraset')
+    ParaSet paraSet
 }
 
 @ToString
@@ -92,6 +101,25 @@ class BssParam implements ToXml {
     @Attribute('functionid')
     String functionId
 }
+
+@ToString
+class ParaSet implements ToXml {
+    @Attribute('name')
+    String name
+
+    @Node('row')
+    List<Row> rowList
+}
+
+@ToString
+class Row implements ToXml {
+    @Attribute('aac003')
+    String name
+
+    @Attribute('rown')
+    String number
+}
+
 /*
 def root = Xml.rootElement(xml)
 println root

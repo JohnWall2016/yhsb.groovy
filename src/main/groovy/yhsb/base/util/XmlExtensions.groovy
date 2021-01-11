@@ -10,6 +10,7 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 import java.lang.annotation.Target
 import java.lang.reflect.Modifier
+import java.lang.reflect.ParameterizedType
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
@@ -109,7 +110,6 @@ trait ToXml {
                 if (Modifier.isTransient(field.modifiers)) return
                 def anno = field.getAnnotation(Text)
                 if (anno) {
-                    println "Text: $field"
                     text = this[field.name]
                 } else if (anno = field.getAnnotation(Attribute)) {
                     def name = anno.value() ?: field.name
@@ -119,18 +119,33 @@ trait ToXml {
                         spreadNodes.add(new SpreadNode(nodeName, Map.of(name, this[field.name])))
                     }
                 } else if (anno = field.getAnnotation(Node)) {
-                    println "Tag: ${field.type}"
                     def name = anno.value() ?: field.name
                     def node = this[field.name]
-                    if (node && ToXml.isInstance(node)) {
-                        nodes.add(
-                                new NodeStruct(
-                                        name: name,
-                                        node: node as ToXml,
-                                        namespaces: field.getAnnotation(Namespaces)?.toMap(),
-                                        spread: field.getAnnotation(Spread) ? true : false
-                                )
-                        )
+                    if (node) {
+                        if (field.type == List) {
+                            def list = node as List<?>
+                            list.each {
+                                if (ToXml.isInstance(it)) {
+                                    nodes.add(
+                                            new NodeStruct(
+                                                    name: name,
+                                                    node: it as ToXml,
+                                                    namespaces: field.getAnnotation(Namespaces)?.toMap(),
+                                                    spread: field.getAnnotation(Spread) ? true : false
+                                            )
+                                    )
+                                }
+                            }
+                        } else if (ToXml.isInstance(node)) {
+                            nodes.add(
+                                    new NodeStruct(
+                                            name: name,
+                                            node: node as ToXml,
+                                            namespaces: field.getAnnotation(Namespaces)?.toMap(),
+                                            spread: field.getAnnotation(Spread) ? true : false
+                                    )
+                            )
+                        }
                     }
                 }
             }
@@ -172,18 +187,32 @@ class XmlExtensions {
                 rs.declareNamespace(field.getAnnotation(Namespaces)?.toMap() ?: [:])
                 def anno = field.getAnnotation(Text)
                 if (anno) {
-                    println "Text: $field"
                     obj[field.name] = rs.text()
                 } else if (anno = field.getAnnotation(Attribute)) {
                     def name = anno.value() ?: field.name
-                    println "Attr: $name ${rs.getClass()} ${rs["@$name"]}"
                     obj[field.name] = rs["@$name"]
                 } else if (anno = field.getAnnotation(Node)) {
-                    println "Tag: ${field.type}"
                     def name = anno.value() ?: field.name
-                    def items = rs[name]
-                    if (items && GPathResult.isInstance(items)) {
-                        obj[field.name] = (items as GPathResult).toObject(field.type)
+                    def object = rs[name]
+                    if (object && GPathResult.isInstance(object)) {
+                        if (field.type == List) {
+                            def list = []
+                            def genericType = field.genericType
+                            if (genericType && ParameterizedType.isInstance(genericType)) {
+                                def paramType = genericType as ParameterizedType
+                                if (paramType.actualTypeArguments.size() > 0) {
+                                    def subtype = paramType.actualTypeArguments[0] as Class<Object>
+                                    (object as GPathResult).each {
+                                        if (GPathResult.isInstance(it)) {
+                                            list.add((it as GPathResult).toObject(subtype))
+                                        }
+                                    }
+                                }
+                            }
+                            obj[field.name] = list
+                        } else {
+                            obj[field.name] = (object as GPathResult).toObject(field.type)
+                        }
                     }
                 }
             }
