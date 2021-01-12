@@ -650,8 +650,8 @@ class Dyfh implements Jsonable {
                 "aaz170=${escape(aaz170)}&aaz159=${escape(aaz159)}&aac001=${escape(pid)}&" +
                 "aaz157=${escape(aaz157)}&aaa129=${escape(agency)}&aae211=${escape(accountMonth)}"
         new HttpSocket(
-                Config.session.getString('host'),
-                Config.session.getInt('port')
+                Config.jbSession.getString('host'),
+                Config.jbSession.getInt('port')
         ).with {
             def content = it.getHttp(path)?.replaceAll(/[\r\n\t]/, '')
             (content =~ regexPaymentInfo).with {

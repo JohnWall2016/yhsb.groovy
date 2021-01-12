@@ -13,7 +13,9 @@ class Config {
         }
     }
 
-    static com.typesafe.config.Config session = load('cjb.session')
+    static com.typesafe.config.Config jbSession = load('cjb.session')
+
+    static com.typesafe.config.Config qbSession = load('qb.session')
 }
 
 class ConfigExtensions {

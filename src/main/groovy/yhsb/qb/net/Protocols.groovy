@@ -11,7 +11,7 @@ import yhsb.base.util.ToXml
 @ToString
 @Namespaces([@NS(name = 'soap', value = 'http://schemas.xmlsoap.org/soap/envelope/')])
 @Node('soap:Envelope')
-class InEnvelope<T extends ToXml> implements ToXml {
+class InEnvelope<T extends Parameters> implements ToXml {
     @Attribute('soap:encodingStyle')
     String encodingStyle = 'http://schemas.xmlsoap.org/soap/encoding/'
 
@@ -21,13 +21,9 @@ class InEnvelope<T extends ToXml> implements ToXml {
     @Node('soap:Body')
     Body<T> body
 
-    InEnvelope(String funId, T params) {
-        header = new Header(funId)
+    InEnvelope(T params) {
+        header = new Header(params.funId)
         body = new Body<>(business: params)
-    }
-
-    static InEnvelope<EmptyParams> withoutParams(String funId) {
-        new InEnvelope<EmptyParams>(funId, new EmptyParams())
     }
 
     void setUser(String user) {
@@ -78,4 +74,130 @@ class Body<T extends ToXml> implements ToXml {
 }
 
 @ToString
-class EmptyParams implements ToXml {}
+class Parameters implements ToXml {
+    transient String funId
+
+    Parameters(String funId) {
+        this.funId = funId
+    }
+}
+
+
+@ToString
+@Namespaces([@NS(name = 'soap', value = 'http://schemas.xmlsoap.org/soap/envelope/')])
+@Node('soap:Envelope')
+class OutEnvelope<T> {
+    @Attribute('soap:encodingStyle')
+    String encodingStyle = 'http://schemas.xmlsoap.org/soap/encoding/'
+
+    @Node('soap:Header')
+    OutHeader header
+
+    @Node('soap:Body')
+    OutBody<T> body
+}
+
+class OutHeader {
+    @Attribute('sessionID')
+    String sessionId
+
+    @Attribute('message')
+    String message
+}
+
+@ToString
+class OutBody<T> {
+    @Node('out:business')
+    @Namespaces([@NS(name = 'out', value = 'http://www.molss.gov.cn/')])
+    OutBusiness<T> result
+}
+
+@ToString
+class OutBusiness<T> {
+    @Node('result')
+    Result result
+
+    @Node('resultset')
+    ResultSet<T> resultSet
+}
+
+
+@ToString
+class Result {
+    @Attribute('result')
+    String result
+
+    @Attribute('row_count')
+    String rowCount
+
+    @Attribute('querysql')
+    String querySql
+}
+
+@ToString
+class ResultSet<T> {
+    @Attribute('name')
+    String name
+
+    @Node('row')
+    List<T> rowList
+}
+
+@ToString
+class Login extends Parameters {
+    Login() {
+        super('F00.00.00.00|192.168.1.110|PC-20170427DGON|00-05-0F-08-1A-34')
+    }
+}
+
+class ClientSql extends Parameters {
+    ClientSql(String funId, String functionId, String sql = '') {
+        super(funId)
+
+        params = new Params(functionId: functionId, clientSql: sql)
+    }
+
+    @Spread @Node('para')
+    Params params
+
+    static class Params implements ToXml {
+        @Attribute('startrow')
+        String startRow = '1'
+
+        @Attribute('row_count')
+        String rowCount = '-1'
+
+        @Attribute('pagesize')
+        String pageSize = '500'
+
+        @Attribute('clientsql')
+        String clientSql = ''
+
+        @Attribute('functionid')
+        String functionId = ''
+    }
+}
+
+class SncbryQuery extends ClientSql {
+    SncbryQuery(String idCard) {
+        super('F00.01.03', 'F27.06', "( aac002 = &apos;$idCard&apos;)")
+    }
+}
+
+@ToString
+class Sncbry implements ToXml {
+    @Attribute('sac100')
+    String pid // 个人编号
+
+    @Attribute('aac003')
+    String name
+
+    @Attribute('aac002')
+    String idCard
+
+    @Attribute('aab300')
+    String agency
+
+    @Attribute('sab100')
+    String agencyId // 单位编号
+}

@@ -111,10 +111,10 @@ class Session extends HttpSocket {
     }
 
     static <T> T use(String user = '002', boolean autoLogin = true, Function<Session, T> func) {
-        def usr = Config.session.getConfig("users.$user")
+        def usr = Config.jbSession.getConfig("users.$user")
         new Session(
-                Config.session.getString('host'),
-                Config.session.getInt('port'),
+                Config.jbSession.getString('host'),
+                Config.jbSession.getInt('port'),
                 usr.getString('id'),
                 usr.getString('pwd')
         ).withCloseable {

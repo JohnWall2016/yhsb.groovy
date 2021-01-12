@@ -3,7 +3,10 @@ package yhsb.qb.net
 import groovy.xml.XmlSlurper
 import yhsb.base.net.HttpRequest
 import yhsb.base.net.HttpSocket
+import yhsb.base.util.Config
 import yhsb.base.util.ToXml
+
+import java.util.function.Function
 
 class Session extends HttpSocket {
     private final String userId
@@ -49,28 +52,57 @@ class Session extends HttpSocket {
                 req.toXml()
     }
 
-    public <T extends ToXml> void sendService(InEnvelope<T> req) {
-        request(toService(req.with {
+    public <T extends Parameters> void sendService(T params) {
+        request(toService(new InEnvelope(params).with {
             user = this.userId
             it.password = this.password
             it
         }))
     }
 
-    static <T> T fromXml(String xml, Class<T> classOfT) {
-        new XmlSlurper().parseText(xml).toObject(classOfT)
+    static <T> T fromXml(String xml, Class<T> classOfT, Class<Object> argClass) {
+        new XmlSlurper().parseText(xml).toGenericObject(classOfT, argClass)
     }
 
-    public <T> T getResult(Class<T> classOfT) {
+    public <T> OutBusiness<T> getResult(Class<T> classOfT) {
         def result = readBody()
-        fromXml(result, classOfT)
+        def outEnv = fromXml(result, OutEnvelope<T>, classOfT)
+        outEnv.body.result
     }
 
     String login() {
-        sendService(
-                InEnvelope.withoutParams(
-                        'F00.00.00.00|192.168.1.110|PC-20170427DGON|00-05-0F-08-1A-34'
-                )
-        )
+        sendService(new Login())
+
+        def header = readHeader()
+        if (header.containsKey('set-cookie')) {
+            header.getValues('set-cookie').each {
+                def m = it =~ /([^=]+?)=(.+?);/
+                if (m.find()) {
+                    cookies[m.group(1)] = m.group(2)
+                }
+            }
+        }
+        readBody(header)
+    }
+
+    void logout() {
+
+    }
+
+    static <T> T use(String user = 'sqb', boolean autoLogin = true, Function<Session, T> func) {
+        def usr = Config.qbSession.getConfig("users.$user")
+        new Session(
+                Config.qbSession.getString('host'),
+                Config.qbSession.getInt('port'),
+                usr.getString('id'),
+                usr.getString('pwd')
+        ).withCloseable {
+            if (autoLogin) it.login()
+            try {
+                func(it)
+            } finally {
+                if (autoLogin) it.logout()
+            }
+        }
     }
 }
