@@ -8,10 +8,9 @@ import yhsb.base.util.ToXml
 class Session extends HttpSocket {
     private final String userId
     private final String password
-    private final String charset = 'GBK'
 
     Session(String host, int port, String userId, String password) {
-        super(host, port, charset)
+        super(host, port, 'GBK')
         this.userId = userId
         this.password = password
     }
@@ -53,7 +52,7 @@ class Session extends HttpSocket {
     public <T extends ToXml> void sendService(InEnvelope<T> req) {
         request(toService(req.with {
             user = this.userId
-            password = this.password
+            it.password = this.password
             it
         }))
     }

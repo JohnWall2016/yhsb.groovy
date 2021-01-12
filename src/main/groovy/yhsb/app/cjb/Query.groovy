@@ -9,8 +9,8 @@ import yhsb.base.util.Excels
 import yhsb.base.util.UpInfoParameters
 import yhsb.cjb.net.BankInfo
 import yhsb.cjb.net.BankInfoQuery
-import yhsb.cjb.net.Cbxx
-import yhsb.cjb.net.CbxxQuery
+import yhsb.cjb.net.Sncbxx
+import yhsb.cjb.net.SncbxxQuery
 import yhsb.cjb.net.Session
 
 @Command(description = '城居保信息查询程序', subcommands = [GrinfoQuery, UpInfo, UpBankInfo])
@@ -36,8 +36,8 @@ class Query extends CommandWithHelp {
             if (idCards) {
                 Session.use { sess ->
                     for (idCard in idCards) {
-                        sess.sendService(new CbxxQuery(idCard))
-                        def result = sess.getResult(Cbxx)
+                        sess.sendService(new SncbxxQuery(idCard))
+                        def result = sess.getResult(Sncbxx)
                         if (result.isEmpty()) {
                             println "$idCard 未在我区参保"
                         } else {
@@ -66,8 +66,8 @@ class Query extends CommandWithHelp {
                     def name = row.getCell(nameCol).value
                     def idCard = row.getCell(idCardCol).value.trim().toUpperCase()
 
-                    sess.sendService(new CbxxQuery(idCard))
-                    def result = sess.getResult(Cbxx)
+                    sess.sendService(new SncbxxQuery(idCard))
+                    def result = sess.getResult(Sncbxx)
                     def state = '未参保'
                     if (!result.isEmpty() && result[0].valid()) {
                         state = result[0].jbState

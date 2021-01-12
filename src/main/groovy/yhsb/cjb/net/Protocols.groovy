@@ -25,8 +25,8 @@ class SysLogin extends Request {
     String password
 }
 
-class CbxxQuery extends Request {
-    CbxxQuery(String idCard) {
+class SncbxxQuery extends Request {
+    SncbxxQuery(String idCard) {
         super('executeSncbxxConQ')
         this.idCard = idCard
     }
@@ -216,7 +216,7 @@ trait XzqhName {
 }
 
 @ToString
-class Cbxx implements Jsonable, JbState, XzqhName {
+class Sncbxx implements Jsonable, JbState, XzqhName {
     @SerializedName('aac001')
     int pid
 
@@ -744,4 +744,72 @@ class Dyfh implements Jsonable {
         <td align="center" id="62">(.+?)</td>
         <td align="center" id="63">(.+?)</td>
       </tr>/$.replaceAll(/[\r\n\t]/, '')
+}
+
+class GrinfoQuery extends PageRequest {
+    GrinfoQuery() {
+        super('zhcxgrinfoQuery')
+    }
+
+    String aaf013 = '', aaz070 = '', aaf101 = '', aac009 = ''
+
+    @SerializedName('aac008')
+    String cbState = '' // 参保状态: "1"-正常参保 "2"-暂停参保 "4"-终止参保 "0"-未参保
+
+    @SerializedName('aac031')
+    String jfState = '' //缴费状态: "1"-参保缴费 "2"-暂停缴费 "3"-终止缴费
+
+    String aac006str = '', aac006end = ''
+    String aac066 = ''
+    String aae030str = '', aae030end = ''
+    String aae476 = '', aae480 = '', aac058 = ''
+
+    @SerializedName('aac002')
+    String idCard = ''
+
+    String aae468 = ''
+
+    @SerializedName('aac003')
+    String name = ''
+}
+
+class Grinfo implements JbState {
+    @SerializedName('aac001')
+    int pid
+
+    @SerializedName('aac002')
+    String idCard
+
+    @SerializedName('aac003')
+    String name
+
+    @SerializedName('aac006')
+    String birthDay
+
+    @SerializedName('aac008')
+    CbState cbState
+
+    @SerializedName('aac010')
+    String hkArea // 户口所在地
+
+    @SerializedName('aac031')
+    JfState jfState
+
+    @SerializedName('aae005')
+    String phoneNumber
+
+    @SerializedName('aae006')
+    String address
+
+    @SerializedName('aae010')
+    String bankCardNumber
+
+    @SerializedName('aaf101')
+    String xzName // 乡镇街区划编码
+
+    @SerializedName('aaf102')
+    String csName // 村社名称区划编码
+
+    @SerializedName('aaf103')
+    String zdName // 组队名称区划编码
 }
