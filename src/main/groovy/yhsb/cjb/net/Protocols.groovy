@@ -767,13 +767,13 @@ class GrinfoQuery extends PageRequest {
     @SerializedName('aac002')
     String idCard = ''
 
-    String aae468 = ''
+    String aae478 = ''
 
     @SerializedName('aac003')
     String name = ''
 }
 
-class Grinfo implements JbState {
+class Grinfo implements Jsonable, JbState {
     @SerializedName('aac001')
     int pid
 

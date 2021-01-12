@@ -7,13 +7,15 @@ import picocli.CommandLine.Parameters
 import yhsb.base.util.CommandWithHelp
 import yhsb.base.util.Excels
 import yhsb.base.util.UpInfoParameters
+import yhsb.base.util.UpInfoParameters2
 import yhsb.cjb.net.BankInfo
 import yhsb.cjb.net.BankInfoQuery
+import yhsb.cjb.net.Grinfo
 import yhsb.cjb.net.Sncbxx
 import yhsb.cjb.net.SncbxxQuery
 import yhsb.cjb.net.Session
 
-@Command(description = '城居保信息查询程序', subcommands = [GrinfoQuery, UpInfo, UpBankInfo])
+@Command(description = '城居保信息查询程序', subcommands = [GrinfoQuery, UpInfo, UpBankInfo, UpIdCardInfo])
 class Query extends CommandWithHelp {
     static void main(String[] args) {
         //println args
@@ -115,6 +117,47 @@ class Query extends CommandWithHelp {
                     println msg
                 }
             }
+            workbook.save(excel.insertBeforeLast('.up'))
+        }
+    }
+
+    @Command(name = 'upIdCardInfo', description = '从姓名更新身份证信息')
+    static class UpIdCardInfo extends CommandWithHelp implements UpInfoParameters2 {
+        @Option(names = ['-f', '--filter'], description = '参保身份过滤条件')
+        String filter = '.*'
+
+        @Override
+        void run() {
+            def workbook = Excels.load(excel)
+            def sheet = workbook.getSheetAt(0)
+
+            println "filter: $filter"
+
+            def pattern = /.*${filter.split(', *').join('|')}.*/
+            println pattern
+
+            Session.use {sess ->
+                for (r in (startRow - 1)..(endRow - 1)) {
+                    def row = sheet.getRow(r)
+                    def name = row.getCell(nameCol).value
+
+                    sess.sendService(new yhsb.cjb.net.GrinfoQuery(name: name))
+                    def result = sess.getResult(Grinfo)
+
+                    List<String> idCards = []
+                    result.each {
+                        def m = it.jbState.toString() =~ pattern
+                        if (m.find()) {
+                            idCards.add(it.idCard)
+                        }
+                    }
+                    def idCard = idCards.join('|')
+                    println "${name.padRight(8)}${idCard}"
+
+                    row.getOrCreateCell(upInfoCol).cellValue = idCard
+                }
+            }
+
             workbook.save(excel.insertBeforeLast('.up'))
         }
     }
