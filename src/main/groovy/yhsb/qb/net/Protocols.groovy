@@ -219,7 +219,7 @@ class JfKind extends MapField {
 }
 
 @ToString
-class Sncbry implements ToXml {
+class Sncbry {
     @Attribute('sac100')
     String pid // 个人编号
 
