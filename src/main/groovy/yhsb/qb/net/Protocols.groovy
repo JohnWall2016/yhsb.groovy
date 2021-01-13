@@ -2,6 +2,7 @@ package yhsb.qb.net
 
 import groovy.transform.ToString
 import yhsb.base.util.Attribute
+import yhsb.base.util.MapField
 import yhsb.base.util.NS
 import yhsb.base.util.Namespaces
 import yhsb.base.util.Node
@@ -188,16 +189,54 @@ class SncbryQuery extends ClientSql {
     }
 }
 
+/** 社保状态 */
+class SbState extends MapField {
+    @Override
+    Map<String, String> getValueMap() {[
+            '1': '在职',
+            '2': '退休',
+            '3': '终止'
+    ]}
+}
+
+/** 参保状态 */
+class CbState extends MapField {
+    @Override
+    Map<String, String> getValueMap() {[
+            '1': '参保缴费',
+            '2': '暂停缴费',
+            '3': '终止缴费'
+    ]}
+}
+
+/** 缴费人员类别 */
+class JfKind extends MapField {
+    @Override
+    Map<String, String> getValueMap() {[
+            '102': '个体缴费',
+            '101': '单位在业人员',
+    ]}
+}
+
 @ToString
 class Sncbry implements ToXml {
     @Attribute('sac100')
     String pid // 个人编号
 
+    @Attribute('aac002')
+    String idCard
+
     @Attribute('aac003')
     String name
 
-    @Attribute('aac002')
-    String idCard
+    @Attribute('aac008')
+    SbState sbState
+
+    @Attribute('aac031')
+    CbState cbState
+
+    @Attribute('sac007')
+    JfKind jfKind
 
     @Attribute('aab300')
     String agency

@@ -197,7 +197,15 @@ class XmlExtensions {
                     object[field.name] = rs.text()
                 } else if (anno = field.getAnnotation(Attribute)) {
                     def name = anno.value() ?: field.name
-                    object[field.name] = rs["@$name"]
+                    def type = field.type
+                    if (Class<?>.isInstance(type)
+                            && (MapField.isAssignableFrom(type as Class<?>))) {
+                        def value = (type as Class<?>).getConstructor().newInstance() as MapField
+                        value.@value = rs["@$name"]
+                        object[field.name] = value
+                    } else {
+                        object[field.name] = rs["@$name"]
+                    }
                 } else if (anno = field.getAnnotation(Node)) {
                     def name = anno.value() ?: field.name
                     def node = rs[name]
