@@ -82,7 +82,6 @@ class Parameters implements ToXml {
     }
 }
 
-
 @ToString
 @Namespaces([@NS(name = 'soap', value = 'http://schemas.xmlsoap.org/soap/envelope/')])
 @Node('soap:Envelope')
@@ -135,12 +134,17 @@ class Result {
 }
 
 @ToString
-class ResultSet<T> {
+class ResultSet<T> implements Iterable<T> {
     @Attribute('name')
     String name
 
     @Node('row')
     List<T> rowList
+
+    @Override
+    Iterator<T> iterator() {
+        rowList?.iterator() ?: [] as Iterator<T>
+    }
 }
 
 @ToString

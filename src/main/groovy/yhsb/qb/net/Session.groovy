@@ -5,6 +5,7 @@ import yhsb.base.net.HttpRequest
 import yhsb.base.net.HttpSocket
 import yhsb.base.util.Config
 import yhsb.base.util.ToXml
+import yhsb.base.util.reflect.GenericClass
 
 import java.util.function.Function
 
@@ -61,7 +62,7 @@ class Session extends HttpSocket {
     }
 
     static <T> T fromXml(String xml, Class<T> classOfT, Class<Object> argClass) {
-        new XmlSlurper().parseText(xml).toGenericObject(classOfT, argClass)
+        new XmlSlurper().parseText(xml).toObject(new GenericClass<T>(classOfT, argClass))
     }
 
     public <T> OutBusiness<T> getResult(Class<T> classOfT) {

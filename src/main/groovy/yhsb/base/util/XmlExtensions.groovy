@@ -4,7 +4,7 @@ import groovy.transform.MapConstructor
 import groovy.transform.PackageScope
 import groovy.xml.MarkupBuilder
 import groovy.xml.slurpersupport.GPathResult
-import org.codehaus.groovy.runtime.typehandling.GroovyCastException
+import yhsb.base.util.reflect.GenericClass
 
 import java.lang.annotation.ElementType
 import java.lang.annotation.Retention
@@ -13,8 +13,7 @@ import java.lang.annotation.Target
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
-
-interface XmlAnnotation {}
+import java.lang.reflect.TypeVariable
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
@@ -186,105 +185,65 @@ class XmlExtensions {
         nsMap
     }
 
-    static <T> void toObject(GPathResult rs, T obj) {
-        obj.class.with {
+    static <T> T toObject(GPathResult rs, GenericClass<T> genericClass, T object = null) {
+        if (!object) object = genericClass.newInstance()
+
+        object.class.with {
             rs.declareNamespace(getAnnotation(Namespaces)?.toMap() ?: [:])
             declaredFields.each { field ->
                 rs.declareNamespace(field.getAnnotation(Namespaces)?.toMap() ?: [:])
                 def anno = field.getAnnotation(Text)
                 if (anno) {
-                    obj[field.name] = rs.text()
+                    object[field.name] = rs.text()
                 } else if (anno = field.getAnnotation(Attribute)) {
                     def name = anno.value() ?: field.name
-                    obj[field.name] = rs["@$name"]
+                    object[field.name] = rs["@$name"]
                 } else if (anno = field.getAnnotation(Node)) {
                     def name = anno.value() ?: field.name
-                    def object = rs[name]
-                    if (object && GPathResult.isInstance(object)) {
+                    def node = rs[name]
+                    if (node && GPathResult.isInstance(node)) {
                         if (field.type == List) {
                             def list = []
                             def genericType = field.genericType
                             if (genericType && ParameterizedType.isInstance(genericType)) {
                                 def paramType = genericType as ParameterizedType
                                 if (paramType.actualTypeArguments.size() > 0) {
-                                    def subtype = paramType.actualTypeArguments[0] as Class<Object>
-                                    (object as GPathResult).each {
-                                        if (GPathResult.isInstance(it)) {
-                                            list.add((it as GPathResult).toObject(subtype))
+                                    def actualClass = null
+                                    def actualType = paramType.actualTypeArguments[0]
+                                    if (Class.isInstance(actualType)) {
+                                        actualClass = actualType as Class
+                                    } else if (TypeVariable.isInstance(actualType)) {
+                                        actualClass = genericClass.getActualType(actualType as TypeVariable)
+                                    }
+                                    if (actualClass) {
+                                        (node as GPathResult).each {
+                                            if (GPathResult.isInstance(it)) {
+                                                list.add((it as GPathResult).toObject(
+                                                        genericClass.createGenericClass(actualClass)
+                                                ))
+                                            }
                                         }
                                     }
                                 }
                             }
-                            obj[field.name] = list
+                            object[field.name] = list
                         } else {
-                            obj[field.name] = (object as GPathResult).toObject(field.type)
+                            object[field.name] = (node as GPathResult).toObject(
+                                    genericClass.createGenericClass(field.genericType)
+                            )
                         }
                     }
                 }
             }
         }
-    }
 
-    static <T> void toGenericObject(GPathResult rs, T obj, Class<Object>... argClasses) {
-        obj.class.with {
-            rs.declareNamespace(getAnnotation(Namespaces)?.toMap() ?: [:])
-            declaredFields.each { field ->
-                rs.declareNamespace(field.getAnnotation(Namespaces)?.toMap() ?: [:])
-                def anno = field.getAnnotation(Text)
-                if (anno) {
-                    obj[field.name] = rs.text()
-                } else if (anno = field.getAnnotation(Attribute)) {
-                    def name = anno.value() ?: field.name
-                    obj[field.name] = rs["@$name"]
-                } else if (anno = field.getAnnotation(Node)) {
-                    def name = anno.value() ?: field.name
-                    def object = rs[name]
-                    if (object && GPathResult.isInstance(object)) {
-                        if (field.type == List) {
-                            def list = []
-                            def genericType = field.genericType
-                            if (genericType && ParameterizedType.isInstance(genericType)) {
-                                def paramType = genericType as ParameterizedType
-                                if (paramType.actualTypeArguments.size() > 0) {
-                                    Class<Object> subtype = null
-                                    try {
-                                        subtype = paramType.actualTypeArguments[0] as Class<Object>
-                                    } catch (GroovyCastException ignored) {
-                                        subtype = argClasses[0]
-                                    }
-                                    (object as GPathResult).each {
-                                        if (GPathResult.isInstance(it)) {
-                                            list.add((it as GPathResult).toGenericObject(subtype, argClasses))
-                                        }
-                                    }
-                                }
-                            }
-                            obj[field.name] = list
-                        } else {
-                            obj[field.name] = (object as GPathResult).toGenericObject(field.type, argClasses)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    static <T> T toObject(GPathResult rs, Class<T> clazz) {
-        def obj = clazz.getConstructor().newInstance()
-        rs.toObject(obj)
-        obj
-    }
-
-    static <T> T toGenericObject(GPathResult rs, Class<T> genericClass, Class<Object>... argClasses) {
-        def obj = genericClass.getConstructor().newInstance()
-        rs.toGenericObject(obj, argClasses)
-        obj
+        object
     }
 
     static <T> List<Field> getXmlFields(Class<T> self) {
         def list = self.superclass ? self.superclass.xmlFields : []
 
-        self.declaredFields.each {field ->
+        self.declaredFields.each { field ->
             if (Modifier.isTransient(field.modifiers)) return
             if (field.getAnnotation(Text) ||
                     field.getAnnotation(Attribute) ||

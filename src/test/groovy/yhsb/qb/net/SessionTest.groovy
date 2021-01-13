@@ -8,6 +8,10 @@ Session.use {
 
     def result = it.getResult(Sncbry)
     println result
+
+    result.resultSet.each {
+        println it
+    }
 }
 
 
