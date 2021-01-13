@@ -17,14 +17,14 @@ class InEnvelope<T extends Parameters> implements ToXml {
     String encodingStyle = 'http://schemas.xmlsoap.org/soap/encoding/'
 
     @Node('soap:Header')
-    Header header
+    InHeader header
 
     @Node('soap:Body')
-    Body<T> body
+    InBody<T> body
 
     InEnvelope(T params) {
-        header = new Header(params.funId)
-        body = new Body<>(business: params)
+        header = new InHeader(params.funId)
+        body = new InBody<>(business: params)
     }
 
     void setUser(String user) {
@@ -37,12 +37,12 @@ class InEnvelope<T extends Parameters> implements ToXml {
 }
 
 @ToString
-class Header implements ToXml {
+class InHeader implements ToXml {
     @Node('in:system')
     @Namespaces([@NS(name = 'in', value = 'http://www.molss.gov.cn/')])
     System system
 
-    Header(String funId) {
+    InHeader(String funId) {
         system = new System(
                 userParams: new UserParams(funId: funId)
         )
@@ -68,7 +68,7 @@ class UserParams implements ToXml {
 }
 
 @ToString
-class Body<T extends ToXml> implements ToXml {
+class InBody<T extends ToXml> implements ToXml {
     @Node('in:business')
     @Namespaces([@NS(name = 'in', value = 'http://www.molss.gov.cn/')])
     T business
