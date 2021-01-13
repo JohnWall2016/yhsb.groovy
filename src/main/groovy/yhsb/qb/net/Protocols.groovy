@@ -155,6 +155,22 @@ class Login extends Parameters {
     }
 }
 
+class FunctionId extends Parameters {
+    FunctionId(String funId, String functionId) {
+        super(funId)
+
+        params = new Params(functionId: functionId)
+    }
+
+    @Spread @Node('para')
+    Params params
+
+    static class Params implements ToXml {
+        @Attribute('functionid')
+        String functionId = ''
+    }
+}
+
 class ClientSql extends Parameters {
     ClientSql(String funId, String functionId, String sql = '') {
         super(funId)
@@ -183,6 +199,7 @@ class ClientSql extends Parameters {
     }
 }
 
+/** 省内参保人员查询 */
 class SncbryQuery extends ClientSql {
     SncbryQuery(String idCard) {
         super('F00.01.03', 'F27.06', "( aac002 = &apos;$idCard&apos;)")
@@ -239,8 +256,63 @@ class Sncbry {
     JfKind jfKind
 
     @Attribute('aab300')
-    String agency
+    String agencyName // 社保机构名称
 
     @Attribute('sab100')
-    String agencyId // 单位编号
+    String dwCode // 单位编号
+}
+
+/** 单位编号查询 */
+class AgencyCodeQuery extends FunctionId {
+    AgencyCodeQuery() {
+        super('F00.01.02', 'F28.02')
+    }
+}
+
+@ToString
+class AgencyCode {
+    @Attribute('aab300')
+    String name
+
+    @Attribute('aab034')
+    String code
+}
+
+/** 离退休人员参保查询统计 */
+class LtxryQuery extends Parameters {
+    LtxryQuery(String idCard, String agencyCode) {
+        super('F00.01.03')
+
+        params = new Params(
+                functionId: 'F27.03',
+                clientSql: "( v.aac002 = &apos;${idCard}&apos;)",
+                agencyCode: agencyCode
+        )
+    }
+
+    @Spread @Node('para')
+    Params params
+
+    static class Params extends ClientSql.Params {
+        @Attribute('aab034')
+        String agencyCode
+    }
+}
+
+@ToString
+class Ltxry {
+    @Attribute('aab004')
+    String companyName
+
+    @Attribute('aae116')
+    String payState // 待遇发放姿态
+
+    @Attribute('aic162')
+    String retireDate // 离退休日期
+
+    @Attribute('aic160')
+    String beginTime // 待遇开始时间
+
+    @Attribute('txj')
+    String pension // 退休金
 }
