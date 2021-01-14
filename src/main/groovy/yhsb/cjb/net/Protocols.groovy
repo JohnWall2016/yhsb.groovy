@@ -406,6 +406,9 @@ class Dfzfd implements Jsonable {
 
     @SerializedName('aaz031')
     int payList // 付款单号
+
+    @SerializedName('bie013')
+    String bankType // 支付银行编码
 }
 
 /**

@@ -153,6 +153,7 @@ class DfPayment extends CommandWithHelp {
             String csName, name, idCard, type
             int yearMonth, startDate, endDate
             BigDecimal amount
+            String memo
         }
 
         @Override
@@ -192,7 +193,8 @@ class DfPayment extends CommandWithHelp {
                                                 yearMonth: dfzfdmx.yearMonth,
                                                 startDate: startDate ?: 0,
                                                 endDate: endDate ?: 0,
-                                                amount: dfzfdmx.amount
+                                                amount: dfzfdmx.amount,
+                                                memo: dfzfd.bankType ? '' : '未绑定支付账户'
                                         )
                                 )
                             }
@@ -223,6 +225,7 @@ class DfPayment extends CommandWithHelp {
                     getCell('G').cellValue = item.startDate ?: ''
                     getCell('H').cellValue = item.endDate ?: ''
                     getCell('I').cellValue = item.amount
+                    getCell('J').cellValue = item.memo
                 }
             }
 
