@@ -816,3 +816,302 @@ class Grinfo implements Jsonable, JbState {
     @SerializedName('aaf103')
     String zdName // 组队名称区划编码
 }
+
+/**
+ * 支付业务类型
+ */
+class PayType extends MapField {
+    @Override
+    HashMap<String, String> getValueMap() {
+        [
+                'F10004': '重复缴费退费',
+                'F10006': '享受终止退保',
+                'F10007': '缴费调整退款'
+        ]
+    }
+}
+
+/**
+ * 财务支付管理查询
+ */
+class CwzfglQuery extends PageRequest {
+    @SerializedName('aaa121')
+    String type // 支付类型
+
+    @SerializedName('aaz031')
+    String payList = '' // 支付单号
+
+    @SerializedName('aae002')
+    String yearMonth // 发放年月
+
+    @SerializedName('aae089')
+    String state
+
+    String bie013 = ''
+
+    CwzfglQuery(String yearMonth, String state = '0') {
+        super('cwzfglQuery', 1, 1000, [
+                'dataKey': 'aae169',
+                'aggregate': 'sum'
+        ])
+        this.yearMonth = yearMonth
+        this.state = state
+    }
+}
+
+@ToString
+class Cwzfgl implements Jsonable {
+    /**
+     * 支付对象类型: "3" - 个人支付
+     */
+    @SerializedName('aaa079')
+    String objectType
+
+    /**
+     * 支付单号
+     */
+    @SerializedName('aaz031')
+    int payList
+
+    /**
+     * 支付状态
+     */
+    @SerializedName('aae088')
+    String state
+
+    @SerializedName('aaa121')
+    PayType type
+
+    /**
+     * 发放年月
+     */
+    @SerializedName('aae002')
+    int yearMonth
+
+    /**
+     * 支付对象银行户名
+     */
+    @SerializedName('aae009')
+    String name
+
+    /**
+     * 支付银行编码
+     */
+    @SerializedName('bie013')
+    String bankType
+
+    /**
+     * 支付对象银行账号
+     */
+    @SerializedName('aae010')
+    String account
+}
+
+/**
+ * 财务支付管理查询_支付单人员明细
+ */
+class CwzfglryQuery extends PageRequest {
+    String aaf015 = ''
+
+    @SerializedName('aac002')
+    String idCard = ''
+
+    @SerializedName('aac003')
+    String name
+
+    /**
+     * 支付单号
+     */
+    @SerializedName('aaz031')
+    String payList
+
+    /**
+     * 支付状态
+     */
+    @SerializedName('aae088')
+    String state
+
+    /**
+     * 业务类型: "F10004" - 重复缴费退费; "F10007" - 缴费调整退款;
+     * "F10006" - 享受终止退保
+     */
+    @SerializedName('aaa121')
+    String type
+
+    /**
+     * 发放年月
+     */
+    @SerializedName('aae002')
+    String yearMonth
+
+    CwzfglryQuery(
+            String payList = '',
+            String yearMonth = '',
+            String state = '',
+            String type = ''
+    ) {
+        super('cwzfgl_zfdryQuery', 1, 1000, [
+                'dataKey': 'aae019',
+                'aggregate': 'sum'
+        ])
+        this.payList = payList
+        this.yearMonth = yearMonth
+        this.state = state
+        this.type = type
+    }
+}
+
+@ToString
+class Cwzfglry implements Jsonable {
+
+    @SerializedName('aac002')
+    String idCard // 身份证号码
+
+    @SerializedName('aac003')
+    String name
+
+    @SerializedName('aaz031')
+    int payList // 付款单号
+
+    @SerializedName('aae019')
+    BigDecimal amount // 支付总金额
+
+    @SerializedName('aaa121')
+    PayType type
+}
+
+/**
+ * 缴费人员终止审核查询
+ */
+class CbzzfhQuery extends PageRequest {
+    String aaf013 = '', aaf030 = '', aae016 = ''
+    String aae011 = '', aae036 = '', aae036s = ''
+    String aae014 = '', aae015 = '', aae015s = ''
+
+    @SerializedName('aac002')
+    String idCard = ''
+
+    String aac003 = '', aac009 = '', aae160 = ''
+
+    CbzzfhQuery(String idCard) {
+        super('cbzzfhPerInfoList')
+        this.idCard = idCard
+    }
+}
+
+@ToString
+class Cbzzfh implements Jsonable {
+    @SerializedName('aac002')
+    String idCard
+
+    @SerializedName('aac003')
+    String name
+
+    @SerializedName('aae031')
+    String ceaseYearMonth // 终止年月
+
+    @SerializedName('aae015')
+    String auditDate // 审核日期
+
+    int aaz038, aac001
+    String aae160
+}
+
+/**
+ * 缴费人员终止审核个人信息查询
+ */
+class CbzzfhgrxxQuery extends Request {
+    String aaz038, aac001, aae160
+
+    CbzzfhgrxxQuery(Cbzzfh cbzzfh) {
+        super('cbzzfhPerinfo')
+
+        aaz038 = "${cbzzfh.aaz038}"
+        aac001 = "${cbzzfh.aac001}"
+        aae160 = cbzzfh.aae160
+    }
+}
+
+class CeaseReason extends MapField {
+    @Override
+    Map<String, String> getValueMap() {[
+            '1401' : '死亡',
+            '1406' : '出外定居',
+            '1407' : '参加职保',
+            '1499' : '其他原因',
+            '6401' : '死亡',
+            '6406' : '出外定居',
+            '6407' : '参加职保',
+            '6499' : '其他原因'
+    ]}
+}
+
+@ToString
+class Cbzzfhgrxx implements Jsonable {
+    @SerializedName('aae160')
+    CeaseReason reason
+
+    @SerializedName('aaz065')
+    BankType bankType
+}
+
+/**
+ * 待遇人员终止审核查询
+ */
+class DyzzfhQuery extends PageRequest {
+    String aaf013 = '', aaf030 = '', aae016 = ''
+    String aae011 = '', aae036 = '', aae036s = ''
+    String aae014 = '', aae015 = '', aae015s = ''
+
+    @SerializedName('aac002')
+    String idCard = ''
+
+    String aac003 = '', aac009 = '', aae160 = ''
+
+    String aic301 = ''
+
+    DyzzfhQuery(String idCard) {
+        super('dyzzfhPerInfoList')
+
+        this.idCard = idCard
+    }
+}
+
+@ToString
+class Dyzzfh implements Jsonable {
+    @SerializedName('aac002')
+    String idCard
+
+    @SerializedName('aac003')
+    String name
+
+    @SerializedName('aae031')
+    String ceaseYearMonth // 终止年月
+
+    @SerializedName('aae015')
+    String auditDate // 审核日期
+
+    int aaz176
+}
+
+/**
+ * 待遇人员终止审核个人信息查询
+ */
+class DyzzfhgrxxQuery extends Request {
+    String aaz176
+
+    DyzzfhgrxxQuery(Dyzzfh dyzzfh) {
+        super('dyzzfhPerinfo')
+
+        aaz176 = "${dyzzfh.aaz176}"
+    }
+}
+
+@ToString
+class Dyzzfhgrxx implements Jsonable {
+    @SerializedName('aae160')
+    CeaseReason reason
+
+    @SerializedName('aaz065')
+    BankType bankType
+}
