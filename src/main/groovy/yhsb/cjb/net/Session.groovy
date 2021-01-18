@@ -243,7 +243,7 @@ class Result<T extends Jsonable> implements Iterable<T>, Jsonable {
 
     @Override
     Iterator<T> iterator() {
-        data?.iterator() ?: [].iterator()
+        (data ?: []).iterator()
     }
 
     static <T extends Jsonable> Result<T> fromJson(String json, Class<T> classOfT) {

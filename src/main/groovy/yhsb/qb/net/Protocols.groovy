@@ -98,6 +98,10 @@ class OutEnvelope<T> {
 }
 
 class OutHeader {
+    OutResult result
+}
+
+class OutResult {
     @Attribute('sessionID')
     String sessionId
 
@@ -144,7 +148,7 @@ class ResultSet<T> implements Iterable<T> {
 
     @Override
     Iterator<T> iterator() {
-        rowList?.iterator() ?: [] as Iterator<T>
+        (rowList ?: []).iterator()
     }
 }
 
