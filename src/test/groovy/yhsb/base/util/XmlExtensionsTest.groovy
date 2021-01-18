@@ -2,6 +2,7 @@ package yhsb.base.util
 
 import groovy.transform.ToString
 import groovy.xml.XmlSlurper
+import yhsb.base.util.reflect.GenericClass
 
 def xml = '''<?xml version="1.0" encoding="GBK"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
@@ -59,47 +60,35 @@ class Body implements ToXml {
 
 @ToString
 class System implements ToXml {
-    @Spread @Node('para')
-    SysParam para
-}
-
-@ToString
-class SysParam implements ToXml {
-    @Attribute('usr')
+    @AttrNode(name = 'para', attr = 'usr')
     String user
 
-    @Attribute('pwd')
+    @AttrNode(name = 'para', attr = 'pwd')
     String password
 
-    @Attribute('funid')
+    @AttrNode(name = 'para', attr = 'funid')
     String funId
 }
 
 @ToString
 class Business implements ToXml {
-    @Spread @Node('para')
-    BssParam para
+    @AttrNode(name = 'para', attr = 'startrow')
+    String startRow
+
+    @AttrNode(name = 'para', attr = 'row_count')
+    String rowCount
+
+    @AttrNode(name = 'para', attr = 'pagesize')
+    String pageSize
+
+    @AttrNode(name = 'para', attr = 'clientsql')
+    String clientSql
+
+    @AttrNode(name = 'para', attr = 'functionid')
+    String functionId
 
     @Node('paraset')
     ParaSet paraSet
-}
-
-@ToString
-class BssParam implements ToXml {
-    @Attribute('startrow')
-    String startRow
-
-    @Attribute('row_count')
-    String rowCount
-
-    @Attribute('pagesize')
-    String pageSize
-
-    @Attribute('clientsql')
-    String clientSql
-
-    @Attribute('functionid')
-    String functionId
 }
 
 @ToString
@@ -129,8 +118,12 @@ println env
 */
 
 def root = new XmlSlurper().parseText(xml)
-def env = root.toObject(Envelope)
+def env = root.toObject(new GenericClass<Envelope>(Envelope))
 println env
+
+println env.header.system
+
+println env.header.system.toXml()
 
 println env.toXml()
 

@@ -36,13 +36,17 @@ import java.lang.reflect.TypeVariable
 }
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target([ElementType.FIELD])
-@interface Spread {}
-
-@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @interface Attribute {
     String value() default ''
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target([ElementType.FIELD])
+@interface AttrNode {
+    String name()
+
+    String attr() default ''
 }
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -56,22 +60,20 @@ class NodeStruct {
     String name
     ToXml node
     Map<String, String> namespaces
-    boolean spread
 }
 
-class SpreadNode implements ToXml {
+class SingleNode implements ToXml {
     String name
     Map attributes
 
-    SpreadNode(String name, Map attributes) {
+    SingleNode(String name, Map attributes) {
         this.name = name
         this.attributes = attributes
     }
 
     void toXml(MarkupBuilder markup,
                String nodeName,
-               Map<String, String> namespaces,
-               boolean spread
+               Map<String, String> namespaces
     ) {
         nodeName ?= name
         markup."$nodeName"(attributes)
@@ -83,7 +85,7 @@ trait ToXml {
         def writer = new StringWriter()
         def markup = new MarkupBuilder(writer)
 
-        toXml(markup, null, null, false)
+        toXml(markup, null, null)
 
         writer.toString()
     }
@@ -91,8 +93,7 @@ trait ToXml {
     void toXml(
             MarkupBuilder markup,
             String nodeName,
-            Map<String, String> namespaces,
-            boolean spread
+            Map<String, String> namespaces
     ) {
         this.class.with {
             // println it
@@ -107,7 +108,6 @@ trait ToXml {
                 attrs[v] = it.value
             }
 
-            List<SpreadNode> spreadNodes = []
             List<NodeStruct> nodes = []
 
             xmlFields.each { field ->
@@ -118,11 +118,7 @@ trait ToXml {
                     text = this[field.name]
                 } else if (anno = field.getAnnotation(Attribute)) {
                     def name = anno.value() ?: field.name
-                    if (!spread) {
-                        attrs[name] = this[field.name]
-                    } else {
-                        spreadNodes.add(new SpreadNode(nodeName, Map.of(name, this[field.name])))
-                    }
+                    attrs[name] = this[field.name]
                 } else if (anno = field.getAnnotation(Node)) {
                     def name = anno.value() ?: field.name
                     def node = this[field.name]
@@ -135,8 +131,7 @@ trait ToXml {
                                             new NodeStruct(
                                                     name: name,
                                                     node: it as ToXml,
-                                                    namespaces: field.getAnnotation(Namespaces)?.toMap(),
-                                                    spread: field.getAnnotation(Spread) ? true : false
+                                                    namespaces: field.getAnnotation(Namespaces)?.toMap()
                                             )
                                     )
                                 }
@@ -146,25 +141,29 @@ trait ToXml {
                                     new NodeStruct(
                                             name: name,
                                             node: node as ToXml,
-                                            namespaces: field.getAnnotation(Namespaces)?.toMap(),
-                                            spread: field.getAnnotation(Spread) ? true : false
+                                            namespaces: field.getAnnotation(Namespaces)?.toMap()
                                     )
                             )
                         }
                     }
-                }
-            }
-
-            if (spread) {
-                spreadNodes.each {
-                    it.toXml(markup, null, null, false)
+                } else if (anno = field.getAnnotation(AttrNode)) {
+                    def name = anno.name()
+                    def attr = anno.attr() ?: field.name
+                    // println "AttrNode $name $attr ${this[field.name]}"
+                    nodes.add(
+                            new NodeStruct(
+                                    name: name,
+                                    node: new SingleNode(name, Map.of(attr, this[field.name])),
+                                    namespaces: field.getAnnotation(Namespaces)?.toMap()
+                            )
+                    )
                 }
             }
 
             if (attrs || text || nodes) {
                 markup."$nodeName"(attrs, text) {
                     nodes.each {
-                        it.node.toXml(markup, it.name, it.namespaces, it.spread)
+                        it.node.toXml(markup, it.name, it.namespaces)
                     }
                 }
             }
@@ -241,6 +240,19 @@ class XmlExtensions {
                             )
                         }
                     }
+                } else if (anno = field.getAnnotation(AttrNode)) {
+                    def name = anno.name()
+                    def attr = anno.attr() ?: field.name
+                    // println "AttrNode: $name $attr ${rs[name]} ${rs[name]["@$attr"]}"
+                    def type = field.type
+                    if (Class<?>.isInstance(type)
+                            && (MapField.isAssignableFrom(type as Class<?>))) {
+                        def value = (type as Class<?>).getConstructor().newInstance() as MapField
+                        value.@value = rs[name]["@$attr"]
+                        object[field.name] = value
+                    } else {
+                        object[field.name] = rs[name]["@$attr"]
+                    }
                 }
             }
         }
@@ -255,7 +267,8 @@ class XmlExtensions {
             if (Modifier.isTransient(field.modifiers)) return
             if (field.getAnnotation(Text) ||
                     field.getAnnotation(Attribute) ||
-                    field.getAnnotation(Node))
+                    field.getAnnotation(Node) ||
+                    field.getAnnotation(AttrNode))
                 list.add(field)
         }
 

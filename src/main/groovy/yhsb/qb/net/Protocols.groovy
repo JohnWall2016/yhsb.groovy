@@ -2,11 +2,11 @@ package yhsb.qb.net
 
 import groovy.transform.ToString
 import yhsb.base.util.Attribute
+import yhsb.base.util.AttrNode
 import yhsb.base.util.MapField
 import yhsb.base.util.NS
 import yhsb.base.util.Namespaces
 import yhsb.base.util.Node
-import yhsb.base.util.Spread
 import yhsb.base.util.ToXml
 
 @ToString
@@ -28,11 +28,11 @@ class InEnvelope<T extends Parameters> implements ToXml {
     }
 
     void setUser(String user) {
-        header.system.userParams.user = user
+        header.system.user = user
     }
 
     void setPassword(String password) {
-        header.system.userParams.password = password
+        header.system.password = password
     }
 }
 
@@ -44,26 +44,20 @@ class InHeader implements ToXml {
 
     InHeader(String funId) {
         system = new System(
-                userParams: new UserParams(funId: funId)
+                funId: funId
         )
     }
 }
 
 @ToString
 class System implements ToXml {
-    @Spread @Node('para')
-    UserParams userParams
-}
-
-@ToString
-class UserParams implements ToXml {
-    @Attribute('usr')
+    @AttrNode(name = 'para', attr = 'usr')
     String user
 
-    @Attribute('pwd')
+    @AttrNode(name = 'para', attr = 'pwd')
     String password
 
-    @Attribute('funid')
+    @AttrNode(name = 'para', attr = 'funid')
     String funId
 }
 
@@ -163,44 +157,36 @@ class FunctionId extends Parameters {
     FunctionId(String funId, String functionId) {
         super(funId)
 
-        params = new Params(functionId: functionId)
+        this.functionId = functionId
     }
 
-    @Spread @Node('para')
-    Params params
+    @AttrNode(name = 'para', attr = 'functionid')
+    String functionId = ''
 
-    static class Params implements ToXml {
-        @Attribute('functionid')
-        String functionId = ''
-    }
 }
 
 class ClientSql extends Parameters {
     ClientSql(String funId, String functionId, String sql = '') {
         super(funId)
 
-        params = new Params(functionId: functionId, clientSql: sql)
+        this.functionId = functionId
+        this.clientSql = sql
     }
 
-    @Spread @Node('para')
-    Params params
+    @AttrNode(name = 'para', attr = 'startrow')
+    String startRow = '1'
 
-    static class Params implements ToXml {
-        @Attribute('startrow')
-        String startRow = '1'
+    @AttrNode(name = 'para', attr = 'row_count')
+    String rowCount = '-1'
 
-        @Attribute('row_count')
-        String rowCount = '-1'
+    @AttrNode(name = 'para', attr = 'pagesize')
+    String pageSize = '500'
 
-        @Attribute('pagesize')
-        String pageSize = '500'
+    @AttrNode(name = 'para', attr = 'clientsql')
+    String clientSql = ''
 
-        @Attribute('clientsql')
-        String clientSql = ''
-
-        @Attribute('functionid')
-        String functionId = ''
-    }
+    @AttrNode(name = 'para', attr = 'functionid')
+    String functionId = ''
 }
 
 /** 省内参保人员查询 */
@@ -283,24 +269,15 @@ class AgencyCode {
 }
 
 /** 离退休人员参保查询统计 */
-class LtxryQuery extends Parameters {
+class LtxryQuery extends ClientSql {
     LtxryQuery(String idCard, String agencyCode) {
-        super('F00.01.03')
+        super('F00.01.03', 'F27.03', "( v.aac002 = &apos;${idCard}&apos;)")
 
-        params = new Params(
-                functionId: 'F27.03',
-                clientSql: "( v.aac002 = &apos;${idCard}&apos;)",
-                agencyCode: agencyCode
-        )
+        this.agencyCode = agencyCode
     }
 
-    @Spread @Node('para')
-    Params params
-
-    static class Params extends ClientSql.Params {
-        @Attribute('aab034')
-        String agencyCode
-    }
+    @AttrNode(name = 'para', attr = 'aab034')
+    String agencyCode
 }
 
 @ToString
