@@ -18,7 +18,7 @@ class DateTime {
 
     static Tuple3<String, String, String> split(
             String date,
-            String format = /^(\d\d\d\d)(\d\d)(\d\d)$/
+            String format = /^(\d\d\d\d)(\d\d)(\d\d)?$/
     ) {
         def m = date =~ format
         if (m.find()) {
