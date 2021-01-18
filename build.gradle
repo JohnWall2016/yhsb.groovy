@@ -22,8 +22,8 @@ repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
     // jcenter()
-    maven{ url 'https://maven.aliyun.com/nexus/content/groups/public/' }
-    maven{ url 'https://maven.aliyun.com/nexus/content/repositories/jcenter'}
+    maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+    maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
 }
 
 dependencies {
@@ -51,34 +51,37 @@ dependencies {
     testImplementation 'org.spockframework:spock-core:2.0-M4-groovy-3.0'
 }
 
-task(cjb) {
-    task(query, dependsOn: 'classes', type: JavaExec) {
-        main = 'yhsb.app.cjb.Query'
-        classpath = sourceSets.main.runtimeClasspath
-    }
+task('cjb.query', dependsOn: 'classes', type: JavaExec) {
+    main = 'yhsb.app.cjb.Query'
+    classpath = sourceSets.main.runtimeClasspath
+}
 
-    task(dfPayment, dependsOn: 'classes', type: JavaExec) {
-        main = 'yhsb.app.cjb.DfPayment'
-        classpath = sourceSets.main.runtimeClasspath
-    }
+task('cjb.dfPayment', dependsOn: 'classes', type: JavaExec) {
+    main = 'yhsb.app.cjb.DfPayment'
+    classpath = sourceSets.main.runtimeClasspath
+}
 
-    task(audit, dependsOn: 'classes', type: JavaExec) {
-        main = 'yhsb.app.cjb.Audit'
-        classpath = sourceSets.main.runtimeClasspath
-    }
+task('cjb.audit', dependsOn: 'classes', type: JavaExec) {
+    main = 'yhsb.app.cjb.Audit'
+    classpath = sourceSets.main.runtimeClasspath
+}
 
-    task(splitExcel, dependsOn: 'classes', type: JavaExec) {
-        main = 'yhsb.app.cjb.SplitExcel'
-        classpath = sourceSets.main.runtimeClasspath
-    }
+task('cjb.splitExcel', dependsOn: 'classes', type: JavaExec) {
+    main = 'yhsb.app.cjb.SplitExcel'
+    classpath = sourceSets.main.runtimeClasspath
+}
 
-    task(clearSf, dependsOn: 'classes', type: JavaExec) {
-        main = 'yhsb.app.cjb.ClearSf'
-        classpath = sourceSets.main.runtimeClasspath
-    }
+task('cjb.clearSf', dependsOn: 'classes', type: JavaExec) {
+    main = 'yhsb.app.cjb.ClearSf'
+    classpath = sourceSets.main.runtimeClasspath
+}
 
-    task(treatment, dependsOn: 'classes', type: JavaExec) {
-        main = 'yhsb.app.cjb.Treatment'
-        classpath = sourceSets.main.runtimeClasspath
-    }
+task('cjb.treatment', dependsOn: 'classes', type: JavaExec) {
+    main = 'yhsb.app.cjb.Treatment'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('qb.query', dependsOn: 'classes', type: JavaExec) {
+    main = 'yhsb.app.qb.Query'
+    classpath = sourceSets.main.runtimeClasspath
 }
