@@ -61,7 +61,7 @@ class Session extends HttpSocket {
         }))
     }
 
-    static <T> T fromXml(String xml, Class<T> classOfT, Class<Object> argClass) {
+    static <T> T fromXml(String xml, Class<T> classOfT, Class<?> argClass) {
         new XmlSlurper().parseText(xml).toObject(new GenericClass<T>(classOfT, argClass))
     }
 
