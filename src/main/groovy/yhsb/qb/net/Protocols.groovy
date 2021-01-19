@@ -1,6 +1,8 @@
 package yhsb.qb.net
 
+import groovy.transform.PackageScope
 import groovy.transform.ToString
+import groovy.xml.MarkupBuilder
 import yhsb.base.util.Attribute
 import yhsb.base.util.AttrNode
 import yhsb.base.util.MapField
@@ -112,8 +114,14 @@ class OutBody<T> {
 
 @ToString
 class OutBusiness<T> {
-    @Node('result')
-    Result result
+    @AttrNode(name = 'result', attr = 'result')
+    String result
+
+    @AttrNode(name = 'result', attr = 'row_count')
+    int rowCount
+
+    @AttrNode(name = 'result', attr = 'querysql')
+    String querySql
 
     @Node('resultset')
     ResultSet<T> resultSet
@@ -126,7 +134,7 @@ class Result {
     String result
 
     @Attribute('row_count')
-    String rowCount
+    int rowCount
 
     @Attribute('querysql')
     String querySql
@@ -187,6 +195,47 @@ class ClientSql extends Parameters {
 
     @AttrNode(name = 'para', attr = 'functionid')
     String functionId = ''
+}
+
+@PackageScope
+class ParaList implements ToXml {
+    LinkedHashMap<String, String> attrs
+    LinkedHashMap<String, String> paraList
+
+    ParaList(
+            LinkedHashMap<String, String> attrs,
+            LinkedHashMap<String, String> paraList
+    ) {
+        this.attrs = attrs
+        this.paraList = paraList
+    }
+
+    void toXml(
+            MarkupBuilder markup,
+            String nodeName,
+            Map<String, String> namespaces
+    ) {
+        markup."$nodeName"(this.attrs) {
+            paraList.each {
+                markup."row"(Map.of(it.key, it.value))
+            }
+        }
+    }
+}
+
+class ParamList extends Parameters {
+    ParamList(
+            String funId,
+            LinkedHashMap<String, String> attrs,
+            LinkedHashMap<String, String> paraList
+    ) {
+        super(funId)
+
+        list = new ParaList(attrs, paraList)
+    }
+
+    @Node('paralist')
+    ParaList list
 }
 
 /** 省内参保人员查询 */
@@ -296,4 +345,62 @@ class Ltxry {
 
     @Attribute('txj')
     String pension // 退休金
+}
+
+/** 养老个人账户查询单 */
+class YlgrzhQuery extends ClientSql {
+    YlgrzhQuery(String idCard) {
+        super('F00.01.03', 'F03.01.19', "( AC01.AAC002 = &apos;${idCard}&apos;)")
+    }
+}
+
+@ToString
+class Ylgrzh {
+    @Attribute('aac001')
+    String pid
+
+    @Attribute('aac003')
+    String name
+
+    @Attribute('aac002')
+    String idCard
+
+    @Attribute('aac006')
+    String birthDay
+
+    @Attribute('aab004')
+    String companyName
+
+    @Attribute('sab100')
+    String companyCode
+}
+
+class YlgrzhzhQuery extends ParamList {
+    YlgrzhzhQuery(String pid) {
+        super('F03.01.19.01', ['name': 'ac01'], ['aac001': pid])
+    }
+}
+
+class YlgrzhmxQuery extends ClientSql {
+    YlgrzhmxQuery(String pid) {
+        super('F00.01.02', 'F03.01.19.01',  "a.aac001 = &apos;${pid}&apos;")
+    }
+}
+
+@ToString
+class Ylgrzhmx {
+    @Attribute('aae001')
+    String year
+
+    @Attribute('saa014')
+    String spgs // 社平公资
+
+    @Attribute('aic020')
+    String jfjs // 缴费基数
+
+    @Attribute('aic110')
+    String jfzs // 缴费指数
+
+    @Attribute('aic090')
+    String months // 实缴月数
 }

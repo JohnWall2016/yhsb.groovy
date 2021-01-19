@@ -202,6 +202,11 @@ class XmlExtensions {
                         def value = (type as Class<?>).getConstructor().newInstance() as MapField
                         value.@value = rs["@$name"]
                         object[field.name] = value
+                    } else if (type == int || type == Integer) {
+                        def value = rs["@$name"] as String
+                        if (value) {
+                            object[field.name] = value.toInteger()
+                        }
                     } else {
                         object[field.name] = rs["@$name"]
                     }
@@ -243,13 +248,19 @@ class XmlExtensions {
                 } else if (anno = field.getAnnotation(AttrNode)) {
                     def name = anno.name()
                     def attr = anno.attr() ?: field.name
-                    // println "AttrNode: $name $attr ${rs[name]} ${rs[name]["@$attr"]}"
+                    //println "AttrNode: $name $attr ${rs[name]} ${rs[name]["@$attr"]}"
                     def type = field.type
+                    //println type
                     if (Class<?>.isInstance(type)
                             && (MapField.isAssignableFrom(type as Class<?>))) {
                         def value = (type as Class<?>).getConstructor().newInstance() as MapField
                         value.@value = rs[name]["@$attr"]
                         object[field.name] = value
+                    } else if (type == int || type == Integer) {
+                        def value = rs[name]["@$attr"] as String
+                        if (value) {
+                            object[field.name] = value.toInteger()
+                        }
                     } else {
                         object[field.name] = rs[name]["@$attr"]
                     }
