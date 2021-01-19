@@ -2,6 +2,20 @@ package yhsb.qb.net
 
 // println((new SncbryQuery('430302195806251012')).toXml())
 
+/*
+println new ParamList('abcefg',
+        [
+                'name': 'ac01'
+        ],
+        [
+            'aac001': '8829087',
+            'aac002': '======='
+        ]
+).toXml()
+
+println new ClientSql('abc', 'efg', 'sssssss').toXml()
+*/
+
 Session.use('qqb') {
 /*
     it.sendService(new SncbryQuery('430302195806251012'))
@@ -52,8 +66,8 @@ Session.use('qqb') {
     //println it.readBody()
     def result = it.getResult(Ylgrzh)
     println result
-    result.resultSet?.each {zh ->
-        it.sendService(new YlgrzhzhQuery(zh.pid))
+    result.resultSet?.each { zh ->
+        it.sendService(new YlgrzhzzQuery(zh.pid))
         println it.readBody()
         it.sendService(new YlgrzhmxQuery(zh.pid))
         def mxResult = it.getResult(Ylgrzhmx)
@@ -61,18 +75,4 @@ Session.use('qqb') {
             it.year == '2020'
         }
     }
-
 }
-/*
-println new ParamList('abcefg',
-        [
-                'name': 'ac01'
-        ],
-        [
-            'aac001': '8829087',
-            'aac002': '======='
-        ]
-).toXml()
-
-println new ClientSql('abc', 'efg', 'sssssss').toXml()
-*/

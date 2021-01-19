@@ -375,12 +375,14 @@ class Ylgrzh {
     String companyCode
 }
 
-class YlgrzhzhQuery extends ParamList {
-    YlgrzhzhQuery(String pid) {
+/** 养老个人账户总账查询 */
+class YlgrzhzzQuery extends ParamList {
+    YlgrzhzzQuery(String pid) {
         super('F03.01.19.01', ['name': 'ac01'], ['aac001': pid])
     }
 }
 
+/** 养老个人账户明细查询 */
 class YlgrzhmxQuery extends ClientSql {
     YlgrzhmxQuery(String pid) {
         super('F00.01.02', 'F03.01.19.01',  "a.aac001 = &apos;${pid}&apos;")
@@ -393,13 +395,13 @@ class Ylgrzhmx {
     String year
 
     @Attribute('saa014')
-    String spgs // 社平公资
+    String averageSalary // 社平公资
 
     @Attribute('aic020')
-    String jfjs // 缴费基数
+    String payoffSalary // 缴费基数
 
     @Attribute('aic110')
-    String jfzs // 缴费指数
+    String index // 缴费指数
 
     @Attribute('aic090')
     String months // 实缴月数

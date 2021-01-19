@@ -86,7 +86,6 @@ trait ToXml {
         def markup = new MarkupBuilder(writer)
 
         toXml(markup, null, null)
-
         writer.toString()
     }
 
@@ -184,6 +183,54 @@ class XmlExtensions {
         nsMap
     }
 
+    private static <T> void updateField(T object, Field field, String value) {
+        def type = field.type
+        if (Class<?>.isInstance(type)
+                && (MapField.isAssignableFrom(type as Class<?>))) {
+            def val = (type as Class<?>).getConstructor().newInstance() as MapField
+            val.@value = value
+            object[field.name] = val
+        } else if (type == int || type == Integer) {
+            if (value) {
+                object[field.name] = value.toInteger()
+            }
+        } else {
+            object[field.name] = value
+        }
+    }
+
+    private static <T> void updateField(T object, Field field, GPathResult rs, GenericClass<T> genericClass) {
+        if (field.type == List) {
+            def list = []
+            def genericType = field.genericType
+            if (genericType && ParameterizedType.isInstance(genericType)) {
+                def paramType = genericType as ParameterizedType
+                if (paramType.actualTypeArguments.size() > 0) {
+                    def actualClass = null
+                    def actualType = paramType.actualTypeArguments[0]
+                    if (Class.isInstance(actualType)) {
+                        actualClass = actualType as Class
+                    } else if (TypeVariable.isInstance(actualType)) {
+                        actualClass = genericClass.getActualType(actualType as TypeVariable)
+                    }
+                    if (actualClass) {
+                        def childrenClass = genericClass.createGenericClass(actualClass)
+                        rs.each {
+                            if (GPathResult.isInstance(it)) {
+                                list.add((it as GPathResult).toObject(childrenClass))
+                            }
+                        }
+                    }
+                }
+            }
+            object[field.name] = list
+        } else {
+            object[field.name] = rs.toObject(
+                    genericClass.createGenericClass(field.genericType)
+            )
+        }
+    }
+
     static <T> T toObject(GPathResult rs, GenericClass<T> genericClass, T object = null) {
         if (!object) object = genericClass.newInstance()
 
@@ -196,73 +243,16 @@ class XmlExtensions {
                     object[field.name] = rs.text()
                 } else if (anno = field.getAnnotation(Attribute)) {
                     def name = anno.value() ?: field.name
-                    def type = field.type
-                    if (Class<?>.isInstance(type)
-                            && (MapField.isAssignableFrom(type as Class<?>))) {
-                        def value = (type as Class<?>).getConstructor().newInstance() as MapField
-                        value.@value = rs["@$name"]
-                        object[field.name] = value
-                    } else if (type == int || type == Integer) {
-                        def value = rs["@$name"] as String
-                        if (value) {
-                            object[field.name] = value.toInteger()
-                        }
-                    } else {
-                        object[field.name] = rs["@$name"]
-                    }
+                    updateField(object, field, rs["@$name"] as String)
+                } else if (anno = field.getAnnotation(AttrNode)) {
+                    def name = anno.name()
+                    def attr = anno.attr() ?: field.name
+                    updateField(object, field, rs[name]["@$attr"] as String)
                 } else if (anno = field.getAnnotation(Node)) {
                     def name = anno.value() ?: field.name
                     def node = rs[name]
                     if (node && GPathResult.isInstance(node)) {
-                        if (field.type == List) {
-                            def list = []
-                            def genericType = field.genericType
-                            if (genericType && ParameterizedType.isInstance(genericType)) {
-                                def paramType = genericType as ParameterizedType
-                                if (paramType.actualTypeArguments.size() > 0) {
-                                    def actualClass = null
-                                    def actualType = paramType.actualTypeArguments[0]
-                                    if (Class.isInstance(actualType)) {
-                                        actualClass = actualType as Class
-                                    } else if (TypeVariable.isInstance(actualType)) {
-                                        actualClass = genericClass.getActualType(actualType as TypeVariable)
-                                    }
-                                    if (actualClass) {
-                                        (node as GPathResult).each {
-                                            if (GPathResult.isInstance(it)) {
-                                                list.add((it as GPathResult).toObject(
-                                                        genericClass.createGenericClass(actualClass)
-                                                ))
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            object[field.name] = list
-                        } else {
-                            object[field.name] = (node as GPathResult).toObject(
-                                    genericClass.createGenericClass(field.genericType)
-                            )
-                        }
-                    }
-                } else if (anno = field.getAnnotation(AttrNode)) {
-                    def name = anno.name()
-                    def attr = anno.attr() ?: field.name
-                    //println "AttrNode: $name $attr ${rs[name]} ${rs[name]["@$attr"]}"
-                    def type = field.type
-                    //println type
-                    if (Class<?>.isInstance(type)
-                            && (MapField.isAssignableFrom(type as Class<?>))) {
-                        def value = (type as Class<?>).getConstructor().newInstance() as MapField
-                        value.@value = rs[name]["@$attr"]
-                        object[field.name] = value
-                    } else if (type == int || type == Integer) {
-                        def value = rs[name]["@$attr"] as String
-                        if (value) {
-                            object[field.name] = value.toInteger()
-                        }
-                    } else {
-                        object[field.name] = rs[name]["@$attr"]
+                        updateField(object, field, (node as GPathResult), genericClass)
                     }
                 }
             }
