@@ -33,7 +33,8 @@ import java.lang.reflect.TypeVariable
 @Target([ElementType.TYPE, ElementType.FIELD])
 @interface Node {
     String value() default ''
-    Closure<Boolean> filter = null
+
+    Class filter() default { it -> true }
 }
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -200,7 +201,13 @@ class XmlExtensions {
         }
     }
 
-    private static <T> void updateField(T object, Field field, GPathResult rs, GenericClass<T> genericClass) {
+    private static <T> void updateField(
+            T object,
+            Field field,
+            GPathResult rs,
+            GenericClass<T> genericClass,
+            Closure filter
+    ) {
         if (field.type == List) {
             def list = []
             def genericType = field.genericType
@@ -215,10 +222,11 @@ class XmlExtensions {
                     }
                     if (actualType) {
                         def childrenClass = genericClass.createGenericClass(actualType)
-                        if (childrenClass)
-                        rs.each {
-                            if (GPathResult.isInstance(it)) {
-                                list.add((it as GPathResult).toObject(childrenClass))
+                        if (childrenClass) {
+                            rs.iterator().findAll { filter(it) }.each {
+                                if (GPathResult.isInstance(it)) {
+                                    list.add((it as GPathResult).toObject(childrenClass))
+                                }
                             }
                         }
                     }
@@ -226,11 +234,12 @@ class XmlExtensions {
             }
             object[field.name] = list
         } else {
-            def obj = rs.toObject(
-                    genericClass.createGenericClass(field.genericType)
-            )
-            println obj
-            object[field.name] = obj
+            rs.iterator().find { filter(it) }?.with {
+                def obj = (it as GPathResult).toObject(
+                        genericClass.createGenericClass(field.genericType)
+                )
+                object[field.name] = obj
+            }
         }
     }
 
@@ -253,15 +262,11 @@ class XmlExtensions {
                     updateField(object, field, rs[name]["@$attr"] as String)
                 } else if (anno = field.getAnnotation(Node)) {
                     def name = anno.value() ?: field.name
-                    def filter = anno.filter
+                    def filter = anno.filter()
                     def node = rs[name]
 
                     if (node && GPathResult.isInstance(node)) {
-                        node.each {
-                            println "each $it ${it.class}"
-                        }
-                        //if (filter && !filter(node as GPathResult))
-                        updateField(object, field, (node as GPathResult), genericClass)
+                        updateField(object, field, node as GPathResult, genericClass, filter.newInstance(null, null) as Closure)
                     }
                 }
             }

@@ -79,9 +79,25 @@ Session.use('qqb') {
  */
     //it.sendService(new InProvincePersonQuery('430302196408210017'))
     //println it.readBody()
-    it.sendService(new JoinedPersonQuery('430302196408210017', '430302'))
-    def body = it.readBody()
-    println body
-    println Session.resultFromXml(body, JoinedPerson)
+    /*
+    it.sendService(new JoinedPersonQuery('43030219640828151X', '430399'))
+    //println it.readBody()
+    def result = it.getResult(JoinedPerson)
 
+    result.resultSet?[1].with {p ->
+        println "${p.id} ${p.agencyCode}"
+
+        it.sendService(new JoinedPersonGeneralQuery(p.id, p.agencyCode))
+        println it.readBody()
+
+        it.sendService(new JoinedPersonPayDetailQuery(p.id, p.agencyCode))
+        //println it.readBody()
+        def payDetailResult = it.getResult(JoinedPersonPayDetail)
+        payDetailResult.resultSet?.each {
+            println it
+        }
+    }
+     */
+    it.sendService(new InProvincePersonQuery('43030219640828151X'))
+    println it.readBody()
 }

@@ -123,25 +123,12 @@ class OutBusiness<T> {
     @AttrNode(name = 'result', attr = 'querysql')
     String querySql
 
-    @Node('resultset')
+    @Node(value = 'resultset', filter = { it['@name'] ==~ /^querylist|cxjg$/ })
     ResultSet<T> resultSet
+
+    @Node(value = 'resultset', filter = { it['@name'] !=~ /^querylist|cxjg$/ })
+    List<ResultSet<T>> otherResultSets
 }
-
-@ToString
-class OutBusiness2<T> {
-    @AttrNode(name = 'result', attr = 'result')
-    String result
-
-    @AttrNode(name = 'result', attr = 'row_count')
-    int rowCount
-
-    @AttrNode(name = 'result', attr = 'querysql')
-    String querySql
-
-    @Node('resultset')
-    ResultSet<T> resultSet
-}
-
 
 @ToString
 class Result {
@@ -185,7 +172,6 @@ class FunctionId extends Parameters {
 
     @AttrNode(name = 'para', attr = 'functionid')
     String functionId = ''
-
 }
 
 class ClientSql extends Parameters {
@@ -210,6 +196,28 @@ class ClientSql extends Parameters {
 
     @AttrNode(name = 'para', attr = 'functionid')
     String functionId = ''
+}
+
+class AddSql extends Parameters {
+    AddSql(String funId, String fid, String addSql, int begin = 0, int pageSize = 0) {
+        super(funId)
+        this.fid = fid
+        this.addSql = addSql
+        this.pageSize = pageSize
+        this.begin = begin
+    }
+
+    @AttrNode(name = 'para', attr = 'pagesize')
+    int pageSize
+
+    @AttrNode(name = 'para', attr = 'addsql')
+    String addSql
+
+    @AttrNode(name = 'para', attr = 'begin')
+    int begin
+
+    @AttrNode(name = 'para', attr = 'fid')
+    String fid
 }
 
 @PackageScope
@@ -316,7 +324,7 @@ class InProvincePerson {
     String companyCode // 单位编号
 }
 
-/** 单位编号查询 */
+/** 社保机构编号查询 */
 class AgencyCodeQuery extends FunctionId {
     AgencyCodeQuery() {
         super('F00.01.02', 'F28.02')
@@ -362,6 +370,63 @@ class JoinedPerson {
 
     @Attribute('sac100')
     String pid
+
+    @Attribute('aab034')
+    String agencyCode
+}
+
+class JoinedPersonGeneralQuery extends AddSql {
+    JoinedPersonGeneralQuery(String id, String agencyCode) {
+        super('F27.00.01', 'F27.02.01', "ac01.aac001 = &apos;${id}&apos;")
+        this.agencyCode = agencyCode
+    }
+
+    @AttrNode(name = 'para', attr = 'aab034')
+    String agencyCode = ''
+}
+
+class JoinedPersonPayDetailQuery extends AddSql {
+    JoinedPersonPayDetailQuery(String id, String agencyCode) {
+        super(
+                'F27.00.01',
+                'F27.02.04',
+                "aac001 = &apos;${id}&apos; and aae140 = &apos;1&apos;",
+                1,
+                500
+        )
+        this.agencyCode = agencyCode
+    }
+
+    @AttrNode(name = 'para', attr = 'aab034')
+    String agencyCode = ''
+}
+
+@ToString
+class JoinedPersonPayDetail {
+    @Attribute('aac003')
+    String name
+
+    /** 费款所属期 */
+    @Attribute('aae002')
+    String period
+
+    /** 对应费款所属期 */
+    @Attribute('aae003')
+    String corPeriod
+
+    /** 缴费月数 */
+    @Attribute('sac047')
+    int payMonths // 0 or 1
+
+    @Attribute('sab100')
+    String companyCode
+
+    @Attribute('aab004')
+    String companyName
+
+    /** 缴费基数 */
+    @Attribute('jfjs00')
+    String payoffSalary
 }
 
 /** 离退休人员参保查询统计 */

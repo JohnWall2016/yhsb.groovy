@@ -13,10 +13,16 @@ class Session extends HttpSocket {
     private final String userId
     private final String password
 
-    Session(String host, int port, String userId, String password) {
+    final String agencyCode
+    final String agencyName
+
+    Session(String host, int port, String userId, String password,
+            String agencyCode = null, String agencyName = null) {
         super(host, port, 'GBK')
         this.userId = userId
         this.password = password
+        this.agencyCode = agencyCode
+        this.agencyName = agencyName
     }
 
     private final HashMap<String, String> cookies = new HashMap<>()
@@ -100,7 +106,9 @@ class Session extends HttpSocket {
                 Config.qbSession.getString('host'),
                 Config.qbSession.getInt('port'),
                 usr.getString('id'),
-                usr.getString('pwd')
+                usr.getString('pwd'),
+                usr.getString('agencyCode'),
+                usr.getString('agencyName'),
         ).withCloseable {
             if (autoLogin) it.login()
             try {
