@@ -127,6 +127,21 @@ class OutBusiness<T> {
     ResultSet<T> resultSet
 }
 
+@ToString
+class OutBusiness2<T> {
+    @AttrNode(name = 'result', attr = 'result')
+    String result
+
+    @AttrNode(name = 'result', attr = 'row_count')
+    int rowCount
+
+    @AttrNode(name = 'result', attr = 'querysql')
+    String querySql
+
+    @Node('resultset')
+    ResultSet<T> resultSet
+}
+
 
 @ToString
 class Result {
@@ -239,8 +254,8 @@ class ParamList extends Parameters {
 }
 
 /** 省内参保人员查询 */
-class SncbryQuery extends ClientSql {
-    SncbryQuery(String idCard) {
+class InProvincePersonQuery extends ClientSql {
+    InProvincePersonQuery(String idCard) {
         super('F00.01.03', 'F27.06', "( aac002 = &apos;$idCard&apos;)")
     }
 }
@@ -275,7 +290,7 @@ class JfKind extends MapField {
 }
 
 @ToString
-class Sncbry {
+class InProvincePerson {
     @Attribute('sac100')
     String pid // 个人编号
 
@@ -298,7 +313,7 @@ class Sncbry {
     String agencyName // 社保机构名称
 
     @Attribute('sab100')
-    String dwCode // 单位编号
+    String companyCode // 单位编号
 }
 
 /** 单位编号查询 */
@@ -317,11 +332,10 @@ class AgencyCode {
     String code
 }
 
-/** 离退休人员参保查询统计 */
-class LtxryQuery extends ClientSql {
-    LtxryQuery(String idCard, String agencyCode) {
-        super('F00.01.03', 'F27.03', "( v.aac002 = &apos;${idCard}&apos;)")
-
+/** 参保人员查询统计 */
+class JoinedPersonQuery extends ClientSql {
+    JoinedPersonQuery(String idCard, String agencyCode) {
+        super('F00.01.03', 'F27.02', "( AC01.AAC002 = &apos;$idCard&apos;)")
         this.agencyCode = agencyCode
     }
 
@@ -330,7 +344,39 @@ class LtxryQuery extends ClientSql {
 }
 
 @ToString
-class Ltxry {
+class JoinedPerson {
+    @Attribute('aab004')
+    String companyName
+
+    @Attribute('sab100')
+    String companyCode
+
+    @Attribute('aac001')
+    String id
+
+    @Attribute('aac002')
+    String idCard
+
+    @Attribute('aac003')
+    String name
+
+    @Attribute('sac100')
+    String pid
+}
+
+/** 离退休人员参保查询统计 */
+class RetiredPersonQuery extends ClientSql {
+    RetiredPersonQuery(String idCard, String agencyCode) {
+        super('F00.01.03', 'F27.03', "( v.aac002 = &apos;${idCard}&apos;)")
+        this.agencyCode = agencyCode
+    }
+
+    @AttrNode(name = 'para', attr = 'aab034')
+    String agencyCode
+}
+
+@ToString
+class RetiredPerson {
     @Attribute('aab004')
     String companyName
 
@@ -348,16 +394,16 @@ class Ltxry {
 }
 
 /** 养老个人账户查询单 */
-class YlgrzhQuery extends ClientSql {
-    YlgrzhQuery(String idCard) {
+class AccountQuery extends ClientSql {
+    AccountQuery(String idCard) {
         super('F00.01.03', 'F03.01.19', "( AC01.AAC002 = &apos;${idCard}&apos;)")
     }
 }
 
 @ToString
-class Ylgrzh {
+class Account {
     @Attribute('aac001')
-    String pid
+    String id // 账户ID
 
     @Attribute('aac003')
     String name
@@ -376,21 +422,21 @@ class Ylgrzh {
 }
 
 /** 养老个人账户总账查询 */
-class YlgrzhzzQuery extends ParamList {
-    YlgrzhzzQuery(String pid) {
-        super('F03.01.19.01', ['name': 'ac01'], ['aac001': pid])
+class AccountTotalQuery extends ParamList {
+    AccountTotalQuery(String id) {
+        super('F03.01.19.01', ['name': 'ac01'], ['aac001': id])
     }
 }
 
 /** 养老个人账户明细查询 */
-class YlgrzhmxQuery extends ClientSql {
-    YlgrzhmxQuery(String pid) {
-        super('F00.01.02', 'F03.01.19.01',  "a.aac001 = &apos;${pid}&apos;")
+class AccountDetailQuery extends ClientSql {
+    AccountDetailQuery(String id) {
+        super('F00.01.02', 'F03.01.19.01',  "a.aac001 = &apos;${id}&apos;")
     }
 }
 
 @ToString
-class Ylgrzhmx {
+class AccountDetail {
     @Attribute('aae001')
     String year
 

@@ -33,27 +33,19 @@ trait UpInfoParameters {
 
     @Parameters(paramLabel = 'nameCol', index = '3', description = '姓名所在列, 例如: H')
     String nameCol
+}
 
+trait UpInfoParametersWithIdCard implements UpInfoParameters {
     @Parameters(paramLabel = 'idCardCol', index = '4', description = '身份证所在列, 例如: I')
     String idCardCol
+}
 
+trait UpInfoParametersWithInfoCol1 implements UpInfoParametersWithIdCard {
     @Parameters(paramLabel = 'upInfoCol', index = '5', description = '更新状态信息所在列, 例如: J')
     String upInfoCol
 }
 
-trait UpInfoParameters2 {
-    @Parameters(paramLabel = 'excel', index = '0', description = 'excel表格文件路径')
-    String excel
-
-    @Parameters(paramLabel = 'startRow', index = '1', description = '开始行(从1开始)')
-    int startRow
-
-    @Parameters(paramLabel = 'endRow', index = '2', description = '结束行(包含在内)')
-    int endRow
-
-    @Parameters(paramLabel = 'nameCol', index = '3', description = '姓名所在列, 例如: H')
-    String nameCol
-
+trait UpInfoParametersWithInfoCol2 implements UpInfoParameters {
     @Parameters(paramLabel = 'upInfoCol', index = '4', description = '更新状态信息所在列, 例如: J')
     String upInfoCol
 }

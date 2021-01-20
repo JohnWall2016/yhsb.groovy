@@ -61,18 +61,27 @@ Session.use('qqb') {
             println it
         }
     }
- */
-    it.sendService(new YlgrzhQuery('430304198907193524'))
+*/
+/*
+    it.sendService(new AccountQuery('430302196209180513'))
     //println it.readBody()
-    def result = it.getResult(Ylgrzh)
+    def result = it.getResult(Account)
     println result
     result.resultSet?.each { zh ->
-        it.sendService(new YlgrzhzzQuery(zh.pid))
+        it.sendService(new AccountTotalQuery(zh.pid))
         println it.readBody()
-        it.sendService(new YlgrzhmxQuery(zh.pid))
-        def mxResult = it.getResult(Ylgrzhmx)
+        it.sendService(new AccountDetailQuery(zh.pid))
+        def mxResult = it.getResult(AccountDetail)
         println mxResult.resultSet?.find {
             it.year == '2020'
         }
     }
+ */
+    //it.sendService(new InProvincePersonQuery('430302196408210017'))
+    //println it.readBody()
+    it.sendService(new JoinedPersonQuery('430302196408210017', '430302'))
+    def body = it.readBody()
+    println body
+    println Session.resultFromXml(body, JoinedPerson)
+
 }

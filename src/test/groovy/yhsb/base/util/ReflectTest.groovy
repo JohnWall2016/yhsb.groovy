@@ -2,7 +2,7 @@ package yhsb.base.util
 
 import yhsb.base.util.reflect.GenericClass
 import yhsb.qb.net.OutEnvelope
-import yhsb.qb.net.Sncbry
+import yhsb.qb.net.InProvincePerson
 
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.TypeVariable
@@ -25,7 +25,7 @@ public <T> void testGenericClass(Class<T> classOfT) {
     }
 }
 
-testGenericClass(Sncbry)
+testGenericClass(InProvincePerson)
 
 
 

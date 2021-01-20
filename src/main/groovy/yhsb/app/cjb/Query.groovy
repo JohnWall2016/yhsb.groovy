@@ -6,8 +6,8 @@ import picocli.CommandLine.Command
 import picocli.CommandLine.Parameters
 import yhsb.base.util.CommandWithHelp
 import yhsb.base.util.Excels
-import yhsb.base.util.UpInfoParameters
-import yhsb.base.util.UpInfoParameters2
+import yhsb.base.util.UpInfoParametersWithInfoCol1
+import yhsb.base.util.UpInfoParametersWithInfoCol2
 import yhsb.cjb.net.BankInfo
 import yhsb.cjb.net.BankInfoQuery
 import yhsb.cjb.net.Grinfo
@@ -54,7 +54,7 @@ class Query extends CommandWithHelp {
     }
 
     @Command(name = 'upInfo', description = '更新excel表格中人员参保信息')
-    static class UpInfo extends CommandWithHelp implements UpInfoParameters {
+    static class UpInfo extends CommandWithHelp implements UpInfoParametersWithInfoCol1 {
         @Override
         void run() {
             println '开始处理数据'
@@ -87,7 +87,7 @@ class Query extends CommandWithHelp {
     }
 
     @Command(name = 'upBankInfo', description = '更新银行信息')
-    static class UpBankInfo extends CommandWithHelp implements UpInfoParameters {
+    static class UpBankInfo extends CommandWithHelp implements UpInfoParametersWithInfoCol1 {
         @Option(names = ['-o', '--only-state'], description = '是否只更新绑卡状态')
         boolean onlyState = true
 
@@ -122,7 +122,7 @@ class Query extends CommandWithHelp {
     }
 
     @Command(name = 'upIdCardInfo', description = '从姓名更新身份证信息')
-    static class UpIdCardInfo extends CommandWithHelp implements UpInfoParameters2 {
+    static class UpIdCardInfo extends CommandWithHelp implements UpInfoParametersWithInfoCol2 {
         @Option(names = ['-f', '--filter'], description = '参保身份过滤条件')
         String filter = '.*'
 

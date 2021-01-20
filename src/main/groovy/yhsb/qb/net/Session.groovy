@@ -65,6 +65,10 @@ class Session extends HttpSocket {
         new XmlSlurper().parseText(xml).toObject(new GenericClass<T>(classOfT, argClass))
     }
 
+    static <T> OutBusiness<T> resultFromXml(String xml, Class<T> classOfT) {
+        fromXml(xml, OutEnvelope<T>, classOfT).body.result
+    }
+
     public <T> OutBusiness<T> getResult(Class<T> classOfT) {
         def result = readBody()
         def outEnv = fromXml(result, OutEnvelope<T>, classOfT)

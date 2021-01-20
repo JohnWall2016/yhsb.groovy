@@ -33,6 +33,7 @@ import java.lang.reflect.TypeVariable
 @Target([ElementType.TYPE, ElementType.FIELD])
 @interface Node {
     String value() default ''
+    Closure<Boolean> filter = null
 }
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -206,15 +207,15 @@ class XmlExtensions {
             if (genericType && ParameterizedType.isInstance(genericType)) {
                 def paramType = genericType as ParameterizedType
                 if (paramType.actualTypeArguments.size() > 0) {
-                    def actualClass = null
                     def actualType = paramType.actualTypeArguments[0]
                     if (Class.isInstance(actualType)) {
-                        actualClass = actualType as Class
+                        actualType = actualType as Class
                     } else if (TypeVariable.isInstance(actualType)) {
-                        actualClass = genericClass.getActualType(actualType as TypeVariable)
+                        actualType = genericClass.getActualType(actualType as TypeVariable)
                     }
-                    if (actualClass) {
-                        def childrenClass = genericClass.createGenericClass(actualClass)
+                    if (actualType) {
+                        def childrenClass = genericClass.createGenericClass(actualType)
+                        if (childrenClass)
                         rs.each {
                             if (GPathResult.isInstance(it)) {
                                 list.add((it as GPathResult).toObject(childrenClass))
@@ -225,9 +226,11 @@ class XmlExtensions {
             }
             object[field.name] = list
         } else {
-            object[field.name] = rs.toObject(
+            def obj = rs.toObject(
                     genericClass.createGenericClass(field.genericType)
             )
+            println obj
+            object[field.name] = obj
         }
     }
 
@@ -250,8 +253,14 @@ class XmlExtensions {
                     updateField(object, field, rs[name]["@$attr"] as String)
                 } else if (anno = field.getAnnotation(Node)) {
                     def name = anno.value() ?: field.name
+                    def filter = anno.filter
                     def node = rs[name]
+
                     if (node && GPathResult.isInstance(node)) {
+                        node.each {
+                            println "each $it ${it.class}"
+                        }
+                        //if (filter && !filter(node as GPathResult))
                         updateField(object, field, (node as GPathResult), genericClass)
                     }
                 }
