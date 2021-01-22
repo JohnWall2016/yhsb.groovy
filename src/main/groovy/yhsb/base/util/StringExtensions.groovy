@@ -60,6 +60,14 @@ class StringExtensions {
             str + insert
         }
     }
+
+    static String stripPrefix(String s, String prefix) {
+        if (prefix && s?.startsWith(prefix)) {
+            s.substring(prefix.length())
+        } else {
+            s
+        }
+    }
 }
 
 interface IsCase {

@@ -836,7 +836,7 @@ class PayType extends MapField {
  */
 class CwzfglQuery extends PageRequest {
     @SerializedName('aaa121')
-    String type // 支付类型
+    String type = '' // 支付类型
 
     @SerializedName('aaz031')
     String payList = '' // 支付单号
@@ -850,7 +850,7 @@ class CwzfglQuery extends PageRequest {
     String bie013 = ''
 
     CwzfglQuery(String yearMonth, String state = '0') {
-        super('cwzfglQuery', 1, 1000, [
+        super('cwzfglQuery', 1, 1000, null, [
                 'dataKey': 'aae169',
                 'aggregate': 'sum'
         ])
@@ -861,48 +861,34 @@ class CwzfglQuery extends PageRequest {
 
 @ToString
 class Cwzfgl implements Jsonable {
-    /**
-     * 支付对象类型: "3" - 个人支付
-     */
+    /** 支付对象类型: "3" - 个人支付*/
     @SerializedName('aaa079')
     String objectType
 
-    /**
-     * 支付单号
-     */
+    /** 支付单号 */
     @SerializedName('aaz031')
     int payList
 
-    /**
-     * 支付状态
-     */
+    /** 支付状态 */
     @SerializedName('aae088')
     String state
 
     @SerializedName('aaa121')
     PayType type
 
-    /**
-     * 发放年月
-     */
+    /** 发放年月 */
     @SerializedName('aae002')
     int yearMonth
 
-    /**
-     * 支付对象银行户名
-     */
+    /** 支付对象银行户名 */
     @SerializedName('aae009')
     String name
 
-    /**
-     * 支付银行编码
-     */
+    /** 支付银行编码 */
     @SerializedName('bie013')
     String bankType
 
-    /**
-     * 支付对象银行账号
-     */
+    /** 支付对象银行账号 */
     @SerializedName('aae010')
     String account
 }
@@ -950,7 +936,7 @@ class CwzfglryQuery extends PageRequest {
             String state = '',
             String type = ''
     ) {
-        super('cwzfgl_zfdryQuery', 1, 1000, [
+        super('cwzfgl_zfdryQuery', 1, 1000, null, [
                 'dataKey': 'aae019',
                 'aggregate': 'sum'
         ])

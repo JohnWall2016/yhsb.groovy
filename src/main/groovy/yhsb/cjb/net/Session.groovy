@@ -147,17 +147,22 @@ class PageRequest extends Request {
         this.pageSize = pageSize
     }
 
-    PageRequest(String id, int page, int pageSize) {
+    PageRequest(
+            String id,
+            int page,
+            int pageSize,
+            Map<String, String> sorting = null,
+            Map<String, String> totals = null
+    ) {
         super(id)
         this.page = page
         this.pageSize = pageSize
-    }
-
-    PageRequest(String id, int page, int pageSize, Map<String, String> sorting) {
-        super(id)
-        this.page = page
-        this.pageSize = pageSize
-        this.sorting = [sorting]
+        if (sorting) {
+            this.sorting = [sorting]
+        }
+        if (totals) {
+            this.totals = [totals]
+        }
     }
 
     int page = 1

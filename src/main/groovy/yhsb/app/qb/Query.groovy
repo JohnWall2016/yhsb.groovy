@@ -6,6 +6,7 @@ import picocli.CommandLine.Parameters
 import yhsb.base.util.CommandWithHelp
 import yhsb.base.util.Excels
 import yhsb.base.util.UpInfoParametersWithIdCard
+import yhsb.base.util.UpInfoParametersWithInfoCol1
 import yhsb.qb.net.Account
 import yhsb.qb.net.AccountDetail
 import yhsb.qb.net.AccountDetailQuery
@@ -18,13 +19,15 @@ import yhsb.qb.net.JoinedPersonGeneralQuery
 import yhsb.qb.net.JoinedPersonPayDetail
 import yhsb.qb.net.JoinedPersonPayDetailQuery
 import yhsb.qb.net.JoinedPersonQuery
+import yhsb.qb.net.JoinedPersonTransfer
+import yhsb.qb.net.JoinedPersonTransferQuery
 import yhsb.qb.net.RetiredPerson
 import yhsb.qb.net.RetiredPersonQuery
 import yhsb.qb.net.Session
 import yhsb.qb.net.InProvincePerson
 import yhsb.qb.net.InProvincePersonQuery
 
-@Command(description = '企保信息查询程序', subcommands = [GrinfoQuery, UpdateAccountInfo])
+@Command(description = '企保信息查询程序', subcommands = [GrinfoQuery, UpdateAccountInfo, UpdateTransferInfo])
 class Query extends CommandWithHelp {
     static void main(String[] args) {
         //println args
@@ -143,6 +146,45 @@ class Query extends CommandWithHelp {
                             }
                         }
                     }
+                }
+            }
+
+            workbook.save(excel.insertBeforeLast('.up'))
+        }
+    }
+
+    @Command(name = 'upTransferInfo', description = '更新基金转入记录信息')
+    static class UpdateTransferInfo extends CommandWithHelp implements UpInfoParametersWithInfoCol1 {
+        @Override
+        void run() {
+            def workbook = Excels.load(excel)
+            def sheet = workbook.getSheetAt(0)
+
+            Session.use() { sess ->
+                for (i in (startRow - 1)..<(endRow)) {
+                    def row = sheet.getRow(i)
+                    def name = row.getCell(nameCol).value
+                    def idCard = row.getCell(idCardCol).value
+
+                    def agencyNames = []
+                    sess.sendService(new JoinedPersonQuery(idCard, sess.agencyCode))
+                    sess.getResult(JoinedPerson).resultSet?.each {
+                        sess.sendService(new JoinedPersonGeneralQuery(it.id, it.agencyCode))
+                        sess.readBody()
+                        sess.sendService(new JoinedPersonTransferQuery(it.id, it.agencyCode))
+                        sess.getResult(JoinedPersonTransfer).resultSet?.each {
+                            //def m = it.agencyNameBeforeTransfer =~ /[军队]/
+                            //if (m.find()) {
+                                agencyNames.add("${it.agencyNameBeforeTransfer}(${it.bookMark})")
+                            //}
+                        }
+                    }
+
+                    def agencies = agencyNames.join('|')
+
+                    println "${i - startRow + 2} $name $idCard $agencies"
+
+                    row.getOrCreateCell(upInfoCol).cellValue = agencies
                 }
             }
 

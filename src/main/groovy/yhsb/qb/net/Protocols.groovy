@@ -385,6 +385,7 @@ class JoinedPersonGeneralQuery extends AddSql {
     String agencyCode = ''
 }
 
+/** 参保人员查询统计 - 缴费记录 */
 class JoinedPersonPayDetailQuery extends AddSql {
     JoinedPersonPayDetailQuery(String id, String agencyCode) {
         super(
@@ -427,6 +428,56 @@ class JoinedPersonPayDetail {
     /** 缴费基数 */
     @Attribute('jfjs00')
     String payoffSalary
+}
+
+/** 参保人员查询统计 - 基金转入记录 */
+class JoinedPersonTransferQuery extends AddSql {
+    JoinedPersonTransferQuery(String id, String agencyCode) {
+        super(
+                'F27.00.01',
+                'F27.02.07',
+                "a.aac001 = &apos;${id}&apos;",
+                1,
+                500
+        )
+        this.agencyCode = agencyCode
+    }
+
+    @AttrNode(name = 'para', attr = 'aab034')
+    String agencyCode = ''
+}
+
+class BookMark extends MapField {
+    @Override
+    Map<String, String> getValueMap() {[
+            '1': '已记账',
+            '0': '未记账', // ?
+    ]}
+}
+
+@ToString
+class JoinedPersonTransfer {
+    @Attribute('aac002')
+    String idCard
+
+    @Attribute('aac003')
+    String name
+
+    @Attribute('aac004')
+    String sex
+
+    @Attribute('aac005')
+    String nation
+
+    @Attribute('aac008')
+    SbState sbState
+
+    @Attribute('aac072')
+    String agencyNameBeforeTransfer
+
+    /** 记账标志 '1'-已记账  */
+    @Attribute('aae112')
+    BookMark bookMark
 }
 
 /** 离退休人员参保查询统计 */

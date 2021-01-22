@@ -80,27 +80,31 @@ class ExcelExtensions {
                     cellStyle = srcCell.cellStyle
                     cellComment = srcCell.cellComment
                     hyperlink = srcCell.hyperlink
-                    switch (srcCell.cellType) {
-                        case CellType.NUMERIC:
-                            cellValue = clearValue ? 0 : srcCell.numericCellValue
-                            break
-                        case CellType.STRING:
-                            cellValue = clearValue ? '' : srcCell.stringCellValue
-                            break
-                        case CellType.FORMULA:
-                            cellFormula = clearValue ? null : srcCell.cellFormula
-                            break
-                        case CellType.BLANK:
-                            setBlank()
-                            break
-                        case CellType.BOOLEAN:
-                            cellValue = clearValue ? false : srcCell.booleanCellValue
-                            break
-                        case CellType.ERROR:
-                            cellErrorValue = srcCell.errorCellValue
-                            break
-                        default:
-                            break
+                    if (clearValue) {
+                        setBlank()
+                    } else {
+                        switch (srcCell.cellType) {
+                            case CellType.NUMERIC:
+                                cellValue = srcCell.numericCellValue
+                                break
+                            case CellType.STRING:
+                                cellValue = srcCell.stringCellValue
+                                break
+                            case CellType.FORMULA:
+                                cellFormula = srcCell.cellFormula
+                                break
+                            case CellType.BLANK:
+                                setBlank()
+                                break
+                            case CellType.BOOLEAN:
+                                cellValue = srcCell.booleanCellValue
+                                break
+                            case CellType.ERROR:
+                                cellErrorValue = srcCell.errorCellValue
+                                break
+                            default:
+                                break
+                        }
                     }
                     it
                 }
@@ -126,7 +130,7 @@ class ExcelExtensions {
         newRow
     }
 
-    static Row getOrCopyRow(Sheet sheet, int targetRowIndex, int sourceRowIndex, boolean clearValue = false) {
+    static Row getOrCopyRow(Sheet sheet, int targetRowIndex, int sourceRowIndex, boolean clearValue = true) {
         if (targetRowIndex == sourceRowIndex) {
             sheet.getRow(sourceRowIndex)
         } else {
@@ -137,7 +141,7 @@ class ExcelExtensions {
         }
     }
 
-    static void copyRows(Sheet sheet, int startRowIndex, int count, int sourceRowIndex, boolean clearValue = false) {
+    static void copyRows(Sheet sheet, int startRowIndex, int count, int sourceRowIndex, boolean clearValue = true) {
         sheet.shiftRows(startRowIndex, sheet.lastRowNum, count, true, false)
         for (i in 0..<count) {
             sheet.createRow(startRowIndex + i, sourceRowIndex, clearValue)

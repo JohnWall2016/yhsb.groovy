@@ -44,7 +44,7 @@ class Payment extends CommandWithHelp {
         def sheet = workbook.getSheetAt(0)
 
         def (String year, String month) = DateTime.split(yearMonth)
-        sheet.getCell('A1').cellValue = "${year}年${month}月个人账户返还表"
+        sheet.getCell('A1').cellValue = "${year}年${month.stripPrefix('0')}月个人账户返还表"
 
         def date = DateTime.format()
         def dateCh = DateTime.format('yyyy年M月d日')
@@ -103,7 +103,7 @@ class Payment extends CommandWithHelp {
 
                     def type = ry.type.toString()
                     if (reason) {
-                        type = "$type$reason"
+                        type = "$type($reason)"
                     }
                     def amount = ry.amount
                     row.getCell('D').cellValue = type
