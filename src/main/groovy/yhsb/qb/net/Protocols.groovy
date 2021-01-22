@@ -451,7 +451,7 @@ class BookMark extends MapField {
     @Override
     Map<String, String> getValueMap() {[
             '1': '已记账',
-            '0': '未记账', // ?
+            '0': '未记账',
     ]}
 }
 
@@ -475,7 +475,7 @@ class JoinedPersonTransfer {
     @Attribute('aac072')
     String agencyNameBeforeTransfer
 
-    /** 记账标志 '1'-已记账  */
+    /** 记账标志 */
     @Attribute('aae112')
     BookMark bookMark
 }
