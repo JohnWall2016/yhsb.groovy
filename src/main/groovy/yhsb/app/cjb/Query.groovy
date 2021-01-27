@@ -300,11 +300,11 @@ class Query extends CommandWithHelp {
 
         static String formatRecord(JfxxRecord r) {
             if (!JfxxTotalRecord.isInstance(r)) {
-                String.format('%5s%9s%9s%9s%9s%9s%9s%9s  %s %s', r.year,
+                String.format('%5s%9s%9s%9s%9s%9s%9s%13s  %s %s', r.year,
                         r.grjf, r.sjbt, r.sqbt, r.xjbt, r.zfdj, r.jtbz, r.tbymbz,
                         r.sbjg.join('|'), r.hbrq.join('|'))
             } else {
-                String.format(' 合计%9s%9s%9s%9s%9s%9s%9s', r.grjf, r.sjbt,
+                String.format(' 合计%9s%9s%9s%9s%9s%9s%13s', r.grjf, r.sjbt,
                         r.sqbt, r.xjbt, r.zfdj, r.jtbz, r.tbymbz) +
                         '  总计: ' + (r as JfxxTotalRecord).total
             }
@@ -312,7 +312,7 @@ class Query extends CommandWithHelp {
 
         static void printJfxxRecords(List<JfxxRecord> records, String message) {
             println(message)
-            println(String.format('%2s%3s%6s%5s%5s%5s%5s%5s%7s %s', '序号', '年度', '个人缴费',
+            println(String.format('%2s%3s%6s%5s%5s%5s%5s%5s%7s %s %s', '序号', '年度', '个人缴费',
                     '省级补贴', '市级补贴', '县级补贴', '政府代缴', '集体补助', '退捕渔民补助', '社保经办机构', '划拨时间'))
             var i = 1
             for (r in records) {
