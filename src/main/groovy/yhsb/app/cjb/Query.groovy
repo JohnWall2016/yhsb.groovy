@@ -304,7 +304,7 @@ class Query extends CommandWithHelp {
                         r.grjf, r.sjbt, r.sqbt, r.xjbt, r.zfdj, r.jtbz, r.tbymbz,
                         r.sbjg.join('|'), r.hbrq.join('|'))
             } else {
-                " 合计" + String.format('%9s%9s%9s%9s%9s%9s%9s', r.grjf, r.sjbt,
+                String.format(' 合计%9s%9s%9s%9s%9s%9s%9s', r.grjf, r.sjbt,
                         r.sqbt, r.xjbt, r.zfdj, r.jtbz, r.tbymbz) +
                         '  总计: ' + (r as JfxxTotalRecord).total
             }
