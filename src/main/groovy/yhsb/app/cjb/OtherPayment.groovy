@@ -22,14 +22,14 @@ import yhsb.cjb.net.Session
 import java.text.Collator
 
 @Command(description = '代发数据导出制表程序', subcommands = [PersonList, PayList])
-class DfPayment extends CommandWithHelp {
+class OtherPayment extends CommandWithHelp {
     static void main(String[] args) {
-        new CommandLine(new DfPayment()).execute(args)
+        new CommandLine(new OtherPayment()).execute(args)
     }
 
     @Override
     void run() {
-        CommandLine.usage(new DfPayment(), System.out)
+        CommandLine.usage(new OtherPayment(), System.out)
     }
 
     private static final personListTemplate = 'D:\\代发管理\\雨湖区城乡居民基本养老保险代发人员名单.xlsx'

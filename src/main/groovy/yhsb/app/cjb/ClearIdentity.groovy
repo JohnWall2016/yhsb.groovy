@@ -9,10 +9,10 @@ import yhsb.base.util.Excels
 import java.nio.file.Paths
 
 @Command(description = '生成清除身份excel文件程序')
-class ClearSf extends CommandWithHelp {
+class ClearIdentity extends CommandWithHelp {
     static void main(String[] args) {
         //println args
-        new CommandLine(new ClearSf()).execute(args)
+        new CommandLine(new ClearIdentity()).execute(args)
     }
 
     @Parameters(description = "系统导出文件目录")

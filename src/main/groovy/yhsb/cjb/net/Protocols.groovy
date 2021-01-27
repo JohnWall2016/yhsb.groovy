@@ -97,7 +97,7 @@ trait JbState {
     String getJbState() {
         def cbState = getCbState()
         def jfState = getJfState()
-        if (!jfState || !jfState.value) "未参保"
+        if (!jfState || !jfState.value) '未参保'
         else {
             def (String jf, String cb) = [jfState.value, cbState.value]
             switch (jf) {
@@ -250,7 +250,7 @@ class Sncbxx implements Jsonable, JbState, XzqhName {
     @SerializedName('aaf102')
     String czName
 
-    boolean valid() {
+    boolean isValid() {
         if (idCard) return true
         false
     }
@@ -1100,4 +1100,89 @@ class Dyzzfhgrxx implements Jsonable {
 
     @SerializedName('aaz065')
     BankType bankType
+}
+
+/**
+ * 省内参保信息查询 - 缴费信息
+ */
+class JfxxRequest extends PageRequest {
+    JfxxRequest(String idCard) {
+        super('executeSncbqkcxjfxxQ', 1, 500)
+        this.idCard = idCard
+    }
+
+    @SerializedName('aac002')
+    String idCard
+}
+
+/** 缴费类型  */
+class JfType extends MapField {
+    @Override
+    Map<String, String> getValueMap() {[
+            '10': '正常应缴',
+            '31': '补缴',
+    ]}
+}
+
+/** 缴费项目  */
+class JfItem extends MapField {
+    @Override
+    Map<String, String> getValueMap() {[
+            '1': '个人缴费',
+            '3': '省级财政补贴',
+            '4': '市级财政补贴',
+            '5': '县级财政补贴',
+            '11': '政府代缴',
+            '15': '退捕渔民补助'
+    ]}
+}
+
+/** 缴费方式  */
+class JfMethod extends MapField {
+    @Override
+    Map<String, String> getValueMap() {[
+            '2': '银行代收',
+            '3': '经办机构自收',
+    ]}
+}
+
+@ToString
+class Jfxx implements Jsonable {
+    /** 缴费年度  */
+    @SerializedName('aae003')
+    Integer year
+
+    /** 备注  */
+    @SerializedName('aae013')
+    String memo
+
+    /** 金额  */
+    @SerializedName('aae022')
+    BigDecimal amount
+
+    @SerializedName('aaa115')
+    JfType type
+
+    @SerializedName('aae341')
+    JfItem item
+
+    @SerializedName('aab033')
+    JfMethod method
+
+    /** 划拨日期  */
+    @SerializedName('aae006')
+    String paidOffDay
+
+    /** 社保机构  */
+    @SerializedName('aaa027')
+    String agency
+
+    /** 行政区划代码  */
+    @SerializedName('aaf101')
+    String xzqh
+
+    /** 是否已划拨 */
+    boolean isPaidOff() {
+        paidOffDay != null
+    }
 }

@@ -56,8 +56,8 @@ task('cjb.query', dependsOn: 'classes', type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 }
 
-task('cjb.dfPayment', dependsOn: 'classes', type: JavaExec) {
-    main = 'yhsb.app.cjb.DfPayment'
+task('cjb.otherPayment', dependsOn: 'classes', type: JavaExec) {
+    main = 'yhsb.app.cjb.OtherPayment'
     classpath = sourceSets.main.runtimeClasspath
 }
 
@@ -71,8 +71,8 @@ task('cjb.splitExcel', dependsOn: 'classes', type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 }
 
-task('cjb.clearSf', dependsOn: 'classes', type: JavaExec) {
-    main = 'yhsb.app.cjb.ClearSf'
+task('cjb.clearIdentity', dependsOn: 'classes', type: JavaExec) {
+    main = 'yhsb.app.cjb.ClearIdentity'
     classpath = sourceSets.main.runtimeClasspath
 }
 
