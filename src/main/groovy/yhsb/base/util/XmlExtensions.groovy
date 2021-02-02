@@ -196,6 +196,10 @@ class XmlExtensions {
             if (value) {
                 object[field.name] = value.toInteger()
             }
+        } else if (type == BigDecimal) {
+            if (value) {
+                object[field.name] = value.toBigDecimal()
+            }
         } else {
             object[field.name] = value
         }

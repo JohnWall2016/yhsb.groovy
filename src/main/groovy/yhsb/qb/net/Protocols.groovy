@@ -174,6 +174,26 @@ class FunctionId extends Parameters {
     String functionId = ''
 }
 
+class Query extends Parameters {
+    Query(String funId, String functionId) {
+        super(funId)
+
+        this.functionId = functionId
+    }
+
+    @AttrNode(name = 'para', attr = 'startrow')
+    String startRow = '1'
+
+    @AttrNode(name = 'para', attr = 'row_count')
+    String rowCount = '-1'
+
+    @AttrNode(name = 'para', attr = 'pagesize')
+    String pageSize = '500'
+
+    @AttrNode(name = 'para', attr = 'functionid')
+    String functionId = ''
+}
+
 class ClientSql extends Parameters {
     ClientSql(String funId, String functionId, String sql = '') {
         super(funId)
@@ -567,4 +587,106 @@ class AccountDetail {
 
     @Attribute('aic090')
     String months // 实缴月数
+}
+
+/** 查询税务推送 单位缴费信息 */
+class TaxPushCompanyPayInfoQuery extends Query {
+    TaxPushCompanyPayInfoQuery() {
+        super('F00.01.03', 'F02.08.01')
+    }
+}
+
+@ToString
+class TaxPushCompanyPayInfo {
+    @Attribute('aab004')
+    String companyName // 单位名称
+
+    @Attribute('sab100')
+    String companyCode // 单位编号
+
+    @Attribute('aaz288')
+    String serialNumber // 征集通知流水号
+
+    @Attribute('aae041')
+    String peroidStartTime // 费款期起
+
+    @Attribute('aae042')
+    String peroidEndTime // 费款期止
+
+    @Attribute('aae063')
+    BigDecimal companyTotalActualPayment // 单位实缴汇总
+
+    @Attribute('aae064')
+    BigDecimal personalTotalActualPayment // 个人实缴汇总
+
+    @Attribute('aae057')
+    BigDecimal overdueFine // 实缴滞纳金
+
+    @Attribute('aae057')
+    BigDecimal interest // 实缴利息
+}
+
+/** 查询税务推送 特殊缴费信息 */
+class TaxPushSpecialPayInfoQuery extends Query {
+    TaxPushSpecialPayInfoQuery() {
+        super('F00.01.03', 'F02.08.03')
+    }
+}
+
+@ToString
+class TaxPushSpecialPayInfo {
+    @Attribute('aaz288')
+    String serialNumber // 征集通知流水号
+
+    @Attribute('aab004')
+    String companyName // 单位名称
+
+    @Attribute('aab001')
+    String companyCode // 单位编号
+
+    @Attribute('yije')
+    BigDecimal shouldPaySum // 社保应缴金额合计
+
+    @Attribute('sjje')
+    BigDecimal actualPaySum // 税务实缴金额合计
+
+    @Attribute('aae015')
+    String memo
+}
+
+/** 查询税务推送 灵活就业缴费信息 */
+class TaxPushPersonalPayInfoQuery extends Query {
+    TaxPushPersonalPayInfoQuery() {
+        super('F00.01.03', 'F02.08.02')
+    }
+}
+
+@ToString
+class TaxPushPersonalPayInfo {
+    @Attribute('aae041')
+    String peroidStartTime // 缴费开始
+
+    @Attribute('aae042')
+    String peroidEndTime // 缴费截止
+
+    @Attribute('jfys')
+    int months // 缴费月数
+
+    @Attribute('aae082')
+    BigDecimal actualPaySum // 个人实缴金额
+
+    @Attribute('sac100')
+    String pid // 个人编号
+
+    @Attribute('aac002')
+    String idCard // 社会保障号码
+
+    @Attribute('aac003')
+    String name
+
+    @Attribute('aad009')
+    String TaxStampNumber // 税务电子税票号码
+
+    @Attribute('aab004')
+    String companyName // 单位名称
 }

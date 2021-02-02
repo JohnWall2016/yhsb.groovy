@@ -98,6 +98,15 @@ Session.use('qqb') {
         }
     }
      */
-    it.sendService(new InProvincePersonQuery('43030219640828151X'))
-    println it.readBody()
+    /*it.sendService(new InProvincePersonQuery('43030219640828151X'))
+    println it.readBody()*/
+
+    /*it.sendService(new TaxPushCompanyPayInfoQuery())
+    println it.getResult(TaxPushCompanyPayInfo)*/
+
+    /*it.sendService(new TaxPushSpecialPayInfoQuery())
+    println it.getResult(TaxPushSpecialPayInfo)*/
+
+    it.sendService(new TaxPushPersonalPayInfoQuery())
+    println it.getResult(TaxPushPersonalPayInfo)
 }

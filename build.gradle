@@ -90,3 +90,8 @@ task('qb.query', dependsOn: 'classes', type: JavaExec) {
     main = 'yhsb.app.qb.Query'
     classpath = sourceSets.main.runtimeClasspath
 }
+
+task('qb.taxPushExporter', dependsOn: 'classes', type: JavaExec) {
+    main = 'yhsb.app.qb.TaxPushExporter'
+    classpath = sourceSets.main.runtimeClasspath
+}
