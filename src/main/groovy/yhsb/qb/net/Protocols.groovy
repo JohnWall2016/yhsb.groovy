@@ -608,10 +608,10 @@ class TaxPushCompanyPayInfo {
     String serialNumber // 征集通知流水号
 
     @Attribute('aae041')
-    String peroidStartTime // 费款期起
+    String periodStartTime // 费款期起
 
     @Attribute('aae042')
-    String peroidEndTime // 费款期止
+    String periodEndTime // 费款期止
 
     @Attribute('aae063')
     BigDecimal companyTotalActualPayment // 单位实缴汇总
@@ -664,10 +664,10 @@ class TaxPushPersonalPayInfoQuery extends Query {
 @ToString
 class TaxPushPersonalPayInfo {
     @Attribute('aae041')
-    String peroidStartTime // 缴费开始
+    String periodStartTime // 缴费开始
 
     @Attribute('aae042')
-    String peroidEndTime // 缴费截止
+    String periodEndTime // 缴费截止
 
     @Attribute('jfys')
     int months // 缴费月数

@@ -68,7 +68,7 @@ class TaxPushExporter extends CommandWithHelp {
                             getCell('C').cellValue = info.companyCode
                             getCell('D').cellValue = info.companyName
                             getCell('E').cellValue = info.serialNumber
-                            getCell('F').cellValue = info.peroidStartTime
+                            getCell('F').cellValue = info.periodStartTime
                             getCell('G').cellValue = info.overdueFine
                             getCell('H').cellValue = info.interest
                             getCell('I').cellValue = info.companyTotalActualPayment
@@ -150,8 +150,8 @@ class TaxPushExporter extends CommandWithHelp {
                         sheet.getOrCopyRow(currentRow ++, startRow).with {
                             getCell('A').cellValue = currentRow - startRow
                             getCell('B').cellFormula = 'NOW()'
-                            getCell('C').cellValue = info.peroidStartTime
-                            getCell('D').cellValue = info.peroidEndTime
+                            getCell('C').cellValue = info.periodStartTime
+                            getCell('D').cellValue = info.periodEndTime
                             getCell('E').cellValue = info.months
                             getCell('F').cellValue = info.actualPaySum
                             getCell('G').cellValue = info.pid
