@@ -24,9 +24,11 @@ class TaxPushExporter extends CommandWithHelp {
         new CommandLine(new TaxPushExporter()).execute(args)
     }
 
-    private static final String companyTemplate = "D:\\企保数据\\雨湖区用人单位税务缴费导入明细表.xls"
-    private static final String specialTemplate = "D:\\企保数据\\雨湖区用人单位税务缴费导入明细表（特殊补缴）.xls"
-    private static final String personalTemplate = "D:\\企保数据\\雨湖区灵活就业缴费导入明细表.xls"
+    private static final String templateDir = "D:\\企保数据"
+    private static final String exportDir = "D:\\企保数据\\导出目录"
+    private static final String companyTemplate = "雨湖区用人单位税务缴费导入明细表.xls"
+    private static final String specialTemplate = "雨湖区用人单位税务缴费导入明细表（特殊补缴）.xls"
+    private static final String personalTemplate = "雨湖区灵活就业缴费导入明细表.xls"
 
     @Override
     void run() {
@@ -38,7 +40,7 @@ class TaxPushExporter extends CommandWithHelp {
         int i = 1
         var date = DateTime.format()
         while (true) {
-            export = template.insertBeforeLast( "${date}-${i}")
+            export = "$exportDir\\${template.insertBeforeLast( "${date}-${i}")}"
             if (!Files.exists(Path.of(export)))
                 break
             i += 1
@@ -55,7 +57,7 @@ class TaxPushExporter extends CommandWithHelp {
                 var result = sess.getResult(TaxPushCompanyPayInfo)
 
                 if (!result.resultSet?.empty) {
-                    var workbook = Excels.load(companyTemplate)
+                    var workbook = Excels.load("$templateDir\\$companyTemplate")
                     var sheet = workbook.getSheetAt(0)
                     int startRow = 3, currentRow = 3
 
@@ -99,7 +101,7 @@ class TaxPushExporter extends CommandWithHelp {
                 var result = sess.getResult(TaxPushSpecialPayInfo)
 
                 if (!result.resultSet?.empty) {
-                    var workbook = Excels.load(specialTemplate)
+                    var workbook = Excels.load("$templateDir\\$specialTemplate")
                     var sheet = workbook.getSheetAt(0)
                     int startRow = 3, currentRow = 3
 
@@ -140,7 +142,7 @@ class TaxPushExporter extends CommandWithHelp {
                 var result = sess.getResult(TaxPushPersonalPayInfo)
 
                 if (!result.resultSet?.empty) {
-                    var workbook = Excels.load(personalTemplate)
+                    var workbook = Excels.load("$templateDir\\$personalTemplate")
                     var sheet = workbook.getSheetAt(0)
                     int startRow = 3, currentRow = 3
 
