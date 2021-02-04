@@ -37,7 +37,7 @@ class Audit extends CommandWithHelp implements DateRange, Export {
         def startDate = DateTime.toDashedDate(startDate)
         def endDate = endDate ? DateTime.toDashedDate(endDate) : ''
 
-        def timeSpan = endDate ? "${startDate}-$endDate" : startDate
+        def timeSpan = endDate ? "${startDate}<->$endDate" : startDate
         println timeSpan
 
         def result = Session.use {
