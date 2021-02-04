@@ -7,7 +7,7 @@ import yhsb.base.util.DateTime
 import yhsb.base.util.Excels
 import yhsb.base.util.Export
 import yhsb.cjb.db.FpHistoryData
-import yhsb.cjb.db.Jzfp2020Db
+import yhsb.cjb.db.Jzfp2021Db
 import yhsb.cjb.net.Cbsh
 import yhsb.cjb.net.CbshQuery
 import yhsb.cjb.net.JbKind
@@ -22,7 +22,7 @@ class Audit extends CommandWithHelp implements DateRange, Export {
         new CommandLine(new Audit()).execute(args)
     }
 
-    private static final String outputDir = 'D:\\精准扶贫\\'
+    private static final String outputDir = 'D:\\特殊缴费\\'
 
     private static final String template = '批量信息变更模板.xls'
 
@@ -50,7 +50,7 @@ class Audit extends CommandWithHelp implements DateRange, Export {
         if (!result.isEmpty()) {
             List<ChangeInfo> changeList = []
 
-            Jzfp2020Db.datastore.withNewSession {
+            Jzfp2021Db.datastore.withNewSession {
                 for (cbsh in result) {
                     def msg = "${cbsh.idCard} ${cbsh.name.padRight(6)} ${cbsh.birthDay}"
 

@@ -56,3 +56,16 @@ class Jzfp2020Db {
         datastore
     }
 }
+
+class Jzfp2021Db {
+    static private HibernateDatastore datastore
+
+    static HibernateDatastore getDatastore() {
+        if (datastore) return datastore
+        datastore = new HibernateDatastore(
+                Config.load('jzfp2021').toMap(),
+                FpHistoryData
+        )
+        datastore
+    }
+}
