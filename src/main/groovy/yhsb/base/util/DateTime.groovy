@@ -1,5 +1,7 @@
 package yhsb.base.util
 
+import yhsb.base.util.collections.LinkedNode
+
 import java.text.SimpleDateFormat
 
 class DateTime {
@@ -30,14 +32,15 @@ class DateTime {
 }
 
 class YearMonth implements Comparable<YearMonth> {
-    int year
-    int month
+    final int year
+    final int month
 
     YearMonth(int year, int month) {
-        if (month < 1 || month > 12)
-            throw new IllegalArgumentException('month must be >= 1 and <= 12')
         this.year = year
         this.month = month
+
+        if (month < 1 || month > 12)
+            throw new IllegalArgumentException('month must be >= 1 and <= 12')
     }
 
     YearMonth offset(int months) {
@@ -49,19 +52,6 @@ class YearMonth implements Comparable<YearMonth> {
             m += 12
         }
         new YearMonth(year + y, m)
-    }
-
-    YearMonth offsetInPlace(int months) {
-        months = month + months
-        var y = months.intdiv(12)
-        var m = months % 12
-        if (m <= 0) {
-            y -= 1
-            m += 12
-        }
-        year += y
-        month = m
-        this
     }
 
     static YearMonth from(int yearMonth) {
@@ -78,10 +68,6 @@ class YearMonth implements Comparable<YearMonth> {
 
     YearMonth min(YearMonth that) {
         if (this < that) this else that
-    }
-
-    YearMonth copy() {
-        new YearMonth(this.year, this.month)
     }
 
     @Override
@@ -102,54 +88,58 @@ class YearMonth implements Comparable<YearMonth> {
 }
 
 class YearMonthRange {
-    YearMonth start
-    YearMonth end
+    final YearMonth start
+    final YearMonth end
 
     YearMonthRange(YearMonth start, YearMonth end) {
-        if (start > end)
-            throw new IllegalArgumentException('start must be less than or equal end')
-
         this.start = start
         this.end = end
+
+        if (start > end)
+            throw new IllegalArgumentException('start must be less than or equal end')
     }
 
-    List<YearMonthRange> minus(YearMonthRange that) {
+    LinkedNode<YearMonthRange> minus(YearMonthRange that) {
         if (that.end < this.start || this.end < that.start) {
-            [this]
+            LinkedNode.of(this)
         } else if (that.start <= this.start) {
             if (that.end < this.end) {
-                [new YearMonthRange(that.end.offset(1), this.end)]
+                LinkedNode.of(new YearMonthRange(that.end.offset(1), this.end))
             } else {
-                []
+                LinkedNode.ofEmpty()
             }
         } else { // that.start > this.start
             if (that.end < this.end) {
-                [new YearMonthRange(this.start, that.start.offset(-1)), new YearMonthRange(that.end.offset(1), this.end)]
+                LinkedNode.of(
+                        new YearMonthRange(this.start, that.start.offset(-1)),
+                        new YearMonthRange(that.end.offset(1), this.end)
+                )
             } else {
-                [new YearMonthRange(this.start, that.start.offset(-1))]
+                LinkedNode.of(new YearMonthRange(this.start, that.start.offset(-1)))
             }
         }
     }
 
-    List<YearMonthRange> minus(List<YearMonthRange> those) {
-        subtract([this], those)
+    LinkedNode<YearMonthRange> minus(LinkedNode<YearMonthRange> those) {
+        subtract(LinkedNode.of(this), those)
     }
 
-    static List<YearMonthRange> subtract(List<YearMonthRange> these, List<YearMonthRange> those) {
+    static LinkedNode<YearMonthRange> subtract(
+            LinkedNode<YearMonthRange> these,
+            LinkedNode<YearMonthRange> those
+    ) {
         those.each { that ->
-            these = these.flatten {
-                it - that
+            List<LinkedNode<YearMonthRange>> list = []
+            these.each {
+                list.add(it - that)
             }
+            these = LinkedNode.flatten(list)
         }
         these
     }
 
     int getMonths() {
         (end.year * 12 + end.month) - (start.year * 12 + start.month) + 1
-    }
-
-    YearMonthRange copy() {
-        new YearMonthRange(this.start.copy(), this.end.copy())
     }
 
     @Override
@@ -159,7 +149,7 @@ class YearMonthRange {
 }
 
 class DateTimeExtensions {
-    static int getMonths(List<YearMonthRange> these) {
+    static int getMonths(LinkedNode<YearMonthRange> these) {
         var total = 0
         these.each {
             total += it.months
@@ -167,36 +157,42 @@ class DateTimeExtensions {
         total
     }
 
-    static LinkedList<YearMonthRange> offsetInPlace(LinkedList<YearMonthRange> these, int months) {
+    static LinkedNode<YearMonthRange> offset(LinkedNode<YearMonthRange> these, int months) {
         if (these.empty) return these
-        var first = these.first()
-        var firstMonths = first.months
+        var cur = these
+        var firstMonths = cur.data.months
         if (firstMonths > months) {
-            first.start.offsetInPlace(months)
+            LinkedNode.cons(
+                    new YearMonthRange(cur.data.start.offset(months), cur.data.end),
+                    cur.next
+            )
+        } else if (firstMonths == months) {
+            cur.next
         } else {
-            these.remove(0)
-            if (firstMonths < months) {
-                these.offsetInPlace(months - firstMonths)
-            }
+            cur.next.offset(months - firstMonths)
         }
-        these
     }
 
-    static List<LinkedList<YearMonthRange>> splitInPlace(LinkedList<YearMonthRange> these, int months) {
-        if (these.empty) return [[], []]
-        var first = these.first()
-        var firstMonths = first.months
+    static List<LinkedNode<YearMonthRange>> split(LinkedNode<YearMonthRange> these, int months) {
+        if (these.empty) return [LinkedNode.<YearMonthRange>ofEmpty(), LinkedNode.<YearMonthRange>ofEmpty()]
+        var cur = these
+        var firstMonths = cur.data.months
         if (firstMonths > months) {
-            [[new YearMonthRange(first.start, first.start.offset(months - 1))],
-             these.offsetInPlace(months)]
+            [
+                    LinkedNode.of(new YearMonthRange(cur.data.start, cur.data.start.offset(months - 1))),
+                    LinkedNode.cons(new YearMonthRange(cur.data.start.offset(months), cur.data.end), cur.next)
+            ]
+        } else if (firstMonths == months) {
+            [
+                    LinkedNode.of(new YearMonthRange(cur.data.start, cur.data.end)),
+                    cur.next,
+            ]
         } else {
-            first = these.removeFirst()
-            if (firstMonths == months) {
-                [[first], these]
-            } else {
-                var list = these.splitInPlace(months - firstMonths)
-                [list[0].addFirst(first), list[1]]
-            }
+            var list = cur.next.split(months - firstMonths)
+            [
+                    LinkedNode.cons(new YearMonthRange(cur.data.start, cur.data.end), list[0]),
+                    list[1]
+            ]
         }
     }
 }
