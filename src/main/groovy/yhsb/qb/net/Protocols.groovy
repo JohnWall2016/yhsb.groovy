@@ -515,6 +515,43 @@ class JoinedPersonTransfer {
     BookMark bookMark
 }
 
+
+/** 参保人员查询统计 - 账户信息 */
+class JoinedPersonAccountQuery extends AddSql {
+    JoinedPersonAccountQuery(String id, String agencyCode) {
+        super(
+                'F27.00.01',
+                'F27.02.06',
+                "aac001 = &apos;${id}&apos;",
+                0,
+                0
+        )
+        this.agencyCode = agencyCode
+    }
+
+    @AttrNode(name = 'para', attr = 'aab034')
+    String agencyCode = ''
+}
+
+@ToString
+class JoinedPersonAccount {
+    /** 开始日期 */
+    @Attribute('ksny')
+    String beginMonth
+
+    /** 截止日期 */
+    @Attribute('jzny')
+    String endMonth
+
+    /** 当年缴费月数 */
+    @Attribute('dnjfys')
+    int payMonths
+
+    /** 累计缴费月数 */
+    @Attribute('ljjfys')
+    int totalPayMonths
+}
+
 /** 离退休人员参保查询统计 */
 class RetiredPersonQuery extends ClientSql {
     RetiredPersonQuery(String idCard, String agencyCode) {

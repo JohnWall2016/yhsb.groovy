@@ -115,6 +115,16 @@ Session.use('qqb') {
     println it.getResult(NoUKeyWorkerContinue)*/
     /*it.sendService(new NoUKeyWorkerJoinInProvinceQuery())
     println it.getResult(NoUKeyWorkerJoinInProvince)*/
-    it.sendService(new NoUKeyWorkerJoinInChangShaQuery())
-    println it.getResult(NoUKeyWorkerJoinInChangSha)
+    /*it.sendService(new NoUKeyWorkerJoinInChangShaQuery())
+    println it.getResult(NoUKeyWorkerJoinInChangSha)*/
+
+    it.sendService(new JoinedPersonQuery('430302196009152032', it.agencyCode))
+    var result = it.getResult(JoinedPerson)
+    result.resultSet?.each {p ->
+        it.sendService(new JoinedPersonAccountQuery(p.id, p.agencyCode))
+        var accountResult = it.getResult(JoinedPersonAccount)
+        for (account in accountResult.resultSet?.rowList) {
+
+        }
+    }
 }
