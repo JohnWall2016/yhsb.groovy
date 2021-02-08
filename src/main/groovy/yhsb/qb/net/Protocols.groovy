@@ -537,11 +537,11 @@ class JoinedPersonAccountQuery extends AddSql {
 class JoinedPersonAccount {
     /** 开始日期 */
     @Attribute('ksny')
-    String beginMonth
+    Integer beginMonth
 
     /** 截止日期 */
     @Attribute('jzny')
-    String endMonth
+    Integer endMonth
 
     /** 当年缴费月数 */
     @Attribute('dnjfys')

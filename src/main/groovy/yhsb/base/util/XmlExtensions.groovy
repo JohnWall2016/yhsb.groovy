@@ -192,9 +192,13 @@ class XmlExtensions {
             def val = (type as Class<?>).getConstructor().newInstance() as MapField
             val.@value = value
             object[field.name] = val
-        } else if (type == int || type == Integer) {
+        } else if (type == int && value) {
+            object[field.name] = value.toInteger()
+        } else if (type == Integer) {
             if (value) {
                 object[field.name] = value.toInteger()
+            } else {
+                object[field.name] = null
             }
         } else if (type == BigDecimal) {
             if (value) {

@@ -124,7 +124,7 @@ Session.use('qqb') {
         it.sendService(new JoinedPersonAccountQuery(p.id, p.agencyCode))
         var accountResult = it.getResult(JoinedPersonAccount)
         for (account in accountResult.resultSet?.rowList) {
-
+            println account
         }
     }
 }
