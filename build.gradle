@@ -96,6 +96,11 @@ task('qb.taxPushExporter', dependsOn: 'classes', type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 }
 
+task('qb.noUKeyAudit', dependsOn: 'classes', type: JavaExec) {
+    main = 'yhsb.app.qb.NoUKeyAudit'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
 task('TaxPushExporter.jar', type: Jar, dependsOn: [build]) {
     archiveFileName  = 'TaxPushExporter.jar'
 
@@ -117,5 +122,30 @@ task('TaxPushExporter.jar', type: Jar, dependsOn: [build]) {
 
     manifest {
         attributes 'Main-Class': 'yhsb.app.qb.TaxPushExporter'
+    }
+}
+
+
+task('NoUKeyAudit.jar', type: Jar, dependsOn: [build]) {
+    archiveFileName  = 'NoUKeyAudit.jar'
+
+    from(sourceSets.main.output) {
+        include "yhsb/base/**"
+        include "yhsb/app/qb/**"
+        include "yhsb/qb/**"
+    }
+
+    from(sourceSets.main.resources) {
+        include "*.properties"
+        include "META-INF/**"
+    }
+
+    from {
+        //添加依懒到打包文件
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    manifest {
+        attributes 'Main-Class': 'yhsb.app.qb.NoUKeyAudit'
     }
 }

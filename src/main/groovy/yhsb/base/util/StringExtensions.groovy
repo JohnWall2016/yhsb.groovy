@@ -68,6 +68,21 @@ class StringExtensions {
             s
         }
     }
+
+    static String bar(String self,
+                      int width,
+                      char padChar = '=',
+                      List<SpecialChars> specialChars = SpecialChars.chinese) {
+        var count = padCount(self, width, specialChars)
+        if (count > 0) {
+            var left = count.intdiv(2)
+            var right = count - left
+            var pad = padChar.toString()
+            "${pad * left} ${self} ${pad * right}"
+        } else {
+            self
+        }
+    }
 }
 
 interface IsCase {

@@ -717,8 +717,13 @@ class NoUKeyWorkerAddQuery extends SimpleClientSql {
     }
 }
 
+interface CompanyInfo {
+    String getCompanyName()
+    String getCompanyCode()
+}
+
 @ToString
-class NoUKeyWorkerAdd {
+class NoUKeyWorkerAdd implements CompanyInfo {
     @Attribute('aab004')
     String companyName // 单位名称
 
@@ -738,7 +743,7 @@ class NoUKeyWorkerStopQuery extends SimpleClientSql {
 }
 
 @ToString
-class NoUKeyWorkerStop {
+class NoUKeyWorkerStop implements CompanyInfo {
     @Attribute('aab004')
     String companyName // 单位名称
 
@@ -758,7 +763,7 @@ class NoUKeyWorkerContinueQuery extends SimpleClientSql {
 }
 
 @ToString
-class NoUKeyWorkerContinue {
+class NoUKeyWorkerContinue implements CompanyInfo {
     @Attribute('aab004')
     String companyName // 单位名称
 
@@ -778,7 +783,7 @@ class NoUKeyWorkerJoinInProvinceQuery extends SimpleClientSql {
 }
 
 @ToString
-class NoUKeyWorkerJoinInProvince {
+class NoUKeyWorkerJoinInProvince implements CompanyInfo {
     @Attribute('aaf010')
     String companyName // 接续单位名称
 
@@ -798,7 +803,7 @@ class NoUKeyWorkerJoinInChangShaQuery extends SimpleClientSql {
 }
 
 @ToString
-class NoUKeyWorkerJoinInChangSha {
+class NoUKeyWorkerJoinInChangSha implements CompanyInfo {
     @Attribute('aaf010')
     String companyName // 接续单位名称
 
