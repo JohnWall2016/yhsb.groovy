@@ -126,9 +126,9 @@ class OutBusiness<T> {
     @Node(value = 'resultset', filter = { it['@name'] ==~ /^querylist|cxjg$/ })
     ResultSet<T> resultSet
 
-    @Node(value = 'resultset', filter = { it['@name'] !=~ /^querylist|cxjg$/ })
+    @Node(value = 'resultset', filter = { !(it['@name'] ==~ /^querylist|cxjg$/) })
     List<ResultSet<T>> otherResultSets
-}
+};
 
 @ToString
 class Result {
@@ -189,6 +189,21 @@ class Query extends Parameters {
 
     @AttrNode(name = 'para', attr = 'pagesize')
     String pageSize = '500'
+
+    @AttrNode(name = 'para', attr = 'functionid')
+    String functionId = ''
+}
+
+class SimpleClientSql extends Parameters {
+    SimpleClientSql(String funId, String functionId, String sql = '') {
+        super(funId)
+
+        this.functionId = functionId
+        this.clientSql = sql
+    }
+
+    @AttrNode(name = 'para', attr = 'clientsql')
+    String clientSql = ''
 
     @AttrNode(name = 'para', attr = 'functionid')
     String functionId = ''
@@ -689,4 +704,104 @@ class TaxPushPersonalPayInfo {
 
     @Attribute('aab004')
     String companyName // 单位名称
+}
+
+@ToString
+class NoUKeyWorkerAddQuery extends SimpleClientSql {
+    NoUKeyWorkerAddQuery() {
+        super(
+                'F00.01.02',
+                'F01.02.01.99',
+                '(ADS3.SAE114=&apos;0&apos; AND ADS3.AAE013 IS NULL AND ADS3.SAE118=&apos;0&apos; and ads3.functionid=&apos;B06.03.01&apos; and ADS3.AAE013 IS NULL )'
+        )
+    }
+}
+
+@ToString
+class NoUKeyWorkerAdd {
+    @Attribute('aab004')
+    String companyName // 单位名称
+
+    @Attribute('sab100')
+    String companyCode // 单位编号
+}
+
+@ToString
+class NoUKeyWorkerStopQuery extends SimpleClientSql {
+    NoUKeyWorkerStopQuery() {
+        super(
+                'F00.01.02',
+                'F01.02.05.99',
+                '(ADS3.SAE114=&apos;0&apos; AND ADS3.AAE013 IS NULL AND ADS3.SAE118=&apos;0&apos; and ads3.functionid=&apos;B06.03.02&apos; and ADS3.AAE013 IS NULL )'
+        )
+    }
+}
+
+@ToString
+class NoUKeyWorkerStop {
+    @Attribute('aab004')
+    String companyName // 单位名称
+
+    @Attribute('sab100')
+    String companyCode // 单位编号
+}
+
+@ToString
+class NoUKeyWorkerContinueQuery extends SimpleClientSql {
+    NoUKeyWorkerContinueQuery() {
+        super(
+                'F00.01.02',
+                'F01.02.06.99',
+                '(ADS3.SAE114=&apos;0&apos; AND ADS3.AAE013 IS NULL AND ADS3.SAE118=&apos;0&apos; and ads3.functionid=&apos;B06.03.03&apos; and ADS3.AAE013 IS NULL )'
+        )
+    }
+}
+
+@ToString
+class NoUKeyWorkerContinue {
+    @Attribute('aab004')
+    String companyName // 单位名称
+
+    @Attribute('sab100')
+    String companyCode // 单位编号
+}
+
+@ToString
+class NoUKeyWorkerJoinInProvinceQuery extends SimpleClientSql {
+    NoUKeyWorkerJoinInProvinceQuery() {
+        super(
+                'F00.01.02',
+                'B06.02.05.99',
+                '(ADS3.SAE114=&apos;0&apos; AND ADS3.AAE013 IS NULL AND ADS3.SAE118=&apos;0&apos; and ads3.functionid=&apos;B06.03.05&apos; and ADS3.AAE013 IS NULL )'
+        )
+    }
+}
+
+@ToString
+class NoUKeyWorkerJoinInProvince {
+    @Attribute('aaf010')
+    String companyName // 接续单位名称
+
+    @Attribute('aaf009')
+    String companyCode // 接续单位编号
+}
+
+@ToString
+class NoUKeyWorkerJoinInChangShaQuery extends SimpleClientSql {
+    NoUKeyWorkerJoinInChangShaQuery() {
+        super(
+                'F00.01.02',
+                'B06.05.01.99',
+                '(ADS3.SAE114=&apos;0&apos; AND ADS3.AAE013 IS NULL AND ADS3.SAE118=&apos;0&apos; and ads3.functionid=&apos;B06.05.02&apos; and ADS3.AAE013 IS NULL )'
+        )
+    }
+}
+
+@ToString
+class NoUKeyWorkerJoinInChangSha {
+    @Attribute('aaf010')
+    String companyName // 接续单位名称
+
+    @Attribute('aaf009')
+    String companyCode // 接续单位编号
 }

@@ -107,6 +107,14 @@ Session.use('qqb') {
     /*it.sendService(new TaxPushSpecialPayInfoQuery())
     println it.getResult(TaxPushSpecialPayInfo)*/
 
-    it.sendService(new TaxPushPersonalPayInfoQuery())
-    println it.getResult(TaxPushPersonalPayInfo)
+    /*it.sendService(new TaxPushPersonalPayInfoQuery())
+    println it.getResult(TaxPushPersonalPayInfo)*/
+    /*it.sendService(new NoUKeyWorkerAddQuery())
+    println it.getResult(NoUKeyWorkerAdd)*/
+    /*it.sendService(new NoUKeyWorkerContinueQuery())
+    println it.getResult(NoUKeyWorkerContinue)*/
+    /*it.sendService(new NoUKeyWorkerJoinInProvinceQuery())
+    println it.getResult(NoUKeyWorkerJoinInProvince)*/
+    it.sendService(new NoUKeyWorkerJoinInChangShaQuery())
+    println it.getResult(NoUKeyWorkerJoinInChangSha)
 }
