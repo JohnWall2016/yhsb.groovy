@@ -71,12 +71,15 @@ class LinkedNode<T> implements Iterable<T> {
         }
     }
 
-    static <T> LinkedNode<T> ofEmpty() {
-        new EmptyLinkedNode<>()
+    private static final LinkedNode<?> EMPTY = new EmptyLinkedNode<>()
+
+    static <T> LinkedNode<T> empty() {
+        LinkedNode<T> t = (LinkedNode<T>)EMPTY
+        return t
     }
 
     static <T> LinkedNode<T> flatten(Collection<LinkedNode<T>> col) {
-        if (!col) return ofEmpty()
+        if (!col) return empty()
 
         var iter = col.iterator()
         var first = iter.next()

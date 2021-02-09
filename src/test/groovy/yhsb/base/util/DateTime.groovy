@@ -49,7 +49,7 @@ void testYearMonthRange() {
     } else if (canBuyMonths >= bonusMonths) {
         spans = validBounds.split(bonusMonths)
     } else {
-        spans = [validBounds, LinkedNode.<YearMonthRange>ofEmpty()]
+        spans = [validBounds, LinkedNode.empty()] as List<LinkedNode<YearMonthRange>>
     }
     println "享受补贴年限: ${spans[0].join('|')}|共计${spans[0].months}个月"
     println "个人缴费年限: ${spans[1].join('|')}|共计${spans[1].months}个月"

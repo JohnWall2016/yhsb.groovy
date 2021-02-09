@@ -106,7 +106,7 @@ class YearMonthRange {
             if (that.end < this.end) {
                 LinkedNode.of(new YearMonthRange(that.end.offset(1), this.end))
             } else {
-                LinkedNode.ofEmpty()
+                LinkedNode.empty()
             }
         } else { // that.start > this.start
             if (that.end < this.end) {
@@ -174,7 +174,8 @@ class DateTimeExtensions {
     }
 
     static List<LinkedNode<YearMonthRange>> split(LinkedNode<YearMonthRange> these, int months) {
-        if (these.empty) return [LinkedNode.<YearMonthRange>ofEmpty(), LinkedNode.<YearMonthRange>ofEmpty()]
+        if (these.empty)
+            return [LinkedNode.empty(), LinkedNode.empty()] as List<LinkedNode<YearMonthRange>>
         var cur = these
         var firstMonths = cur.data.months
         if (firstMonths > months) {
